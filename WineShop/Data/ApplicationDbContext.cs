@@ -9,6 +9,5 @@ namespace WineShop.Data
         {
 
         }
-        public DbSet<Category>? Categories { get; set; }
     }
 }
