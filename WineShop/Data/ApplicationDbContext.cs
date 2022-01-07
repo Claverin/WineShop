@@ -9,5 +9,6 @@ namespace WineShop.Data
         {
 
         }
+        public DbSet<Manufacturer> Manufacturer { get; set; }
     }
 }
