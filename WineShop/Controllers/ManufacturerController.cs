@@ -19,13 +19,12 @@ namespace WineShop.Controllers
             return View(objList);
         }
 
-        //GET - CREATE
+        //CREATE
         public IActionResult Create()
         {
             return View();
         }
 
-        //POST - CREATE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Manufacturer obj)
@@ -40,7 +39,7 @@ namespace WineShop.Controllers
 
         }
 
-        //GET - EDIT
+        //EDIT
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0)
@@ -56,7 +55,6 @@ namespace WineShop.Controllers
             return View(obj);
         }
 
-        //POST - EDIT
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Manufacturer obj)
@@ -71,7 +69,7 @@ namespace WineShop.Controllers
 
         }
 
-        //GET - DELETE
+        //DELETE
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -79,15 +77,14 @@ namespace WineShop.Controllers
                 return NotFound();
             }
             var obj = _db.Manufacturer.Find(id);
+
             if (obj == null)
             {
                 return NotFound();
             }
-
             return View(obj);
         }
 
-        //POST - DELETE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
@@ -97,9 +94,12 @@ namespace WineShop.Controllers
             {
                 return NotFound();
             }
-            _db.Manufacturer.Remove(obj);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            else
+            {
+                _db.Manufacturer.Remove(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
     }
 }
