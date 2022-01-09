@@ -11,8 +11,8 @@ using WineShop.Data;
 namespace WineShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211229070643_AddCategoryToDataBase")]
-    partial class AddCategoryToDataBase
+    [Migration("20220109090702_addManufacturerTableToDB")]
+    partial class addManufacturerTableToDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,24 +23,21 @@ namespace WineShop.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("WineShop.Models.Category", b =>
+            modelBuilder.Entity("WineShop.Models.Manufacturer", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID_Manufacturer")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Manufacturer"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID_Manufacturer");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Manufacturer");
                 });
 #pragma warning restore 612, 618
         }
