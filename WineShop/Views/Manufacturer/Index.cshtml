@@ -29,17 +29,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var obj in Model)
+                @foreach(var manufacturer in Model)
                 {
                 <tr>
-                    <td width="8%">@obj.ID_Manufacturer</td>
-                    <td width="75%">@obj.Name</td>
+                    <td width="8%">@manufacturer.ID_Manufacturer</td>
+                    <td width="75%">@manufacturer.Name</td>
                     <td class="text-center">
                         <div class="btn-group" role="group">
-                            <a asp-controller="Manufacturer" asp-route-Id="@obj.ID_Manufacturer" asp-action="Edit" class="btn btn-primary mx-1">
+                            <a asp-controller="Manufacturer" asp-route-Id="@manufacturer.ID_Manufacturer" asp-action="Edit" class="btn btn-primary mx-1">
                                 <i class="fas fa-edit">Edit</i>  
                             </a>
-                            <a asp-controller="Manufacturer" asp-route-Id="@obj.ID_Manufacturer" asp-action="Delete" class="btn btn-danger mx-1">
+                            <a asp-controller="Manufacturer" asp-route-Id="@manufacturer.ID_Manufacturer" asp-action="Delete" class="btn btn-danger mx-1">
                                 <i class="far fa-trash-alt">Delete</i> 
                             </a>
                         </div>
@@ -53,5 +53,4 @@
     {
         <p> No Manufacturer exists.</p>
     }
-
 </div>

@@ -33,7 +33,7 @@ namespace WineShop.Controllers
             {
                 _db.Manufacturer.Add(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(obj);
 
@@ -63,7 +63,7 @@ namespace WineShop.Controllers
             {
                 _db.Manufacturer.Update(obj);
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(obj);
 
@@ -94,12 +94,9 @@ namespace WineShop.Controllers
             {
                 return NotFound();
             }
-            else
-            {
-                _db.Manufacturer.Remove(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            _db.Manufacturer.Remove(obj);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
