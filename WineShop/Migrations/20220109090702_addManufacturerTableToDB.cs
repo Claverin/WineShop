@@ -4,7 +4,7 @@
 
 namespace WineShop.Migrations
 {
-    public partial class AddManufacturerToDataBase : Migration
+    public partial class addManufacturerTableToDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

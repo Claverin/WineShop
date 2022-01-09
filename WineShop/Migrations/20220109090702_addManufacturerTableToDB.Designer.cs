@@ -11,8 +11,8 @@ using WineShop.Data;
 namespace WineShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220107111448_AddManufacturerToDataBase")]
-    partial class AddManufacturerToDataBase
+    [Migration("20220109090702_addManufacturerTableToDB")]
+    partial class addManufacturerTableToDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
