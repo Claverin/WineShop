@@ -14,6 +14,7 @@ namespace WineShop.Migrations
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
+#pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
@@ -36,6 +37,24 @@ namespace WineShop.Migrations
 
                     b.ToTable("Manufacturer");
                 });
+
+            modelBuilder.Entity("WineShop.Models.ProductType", b =>
+                {
+                    b.Property<int>("ID_ProductType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_ProductType"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID_ProductType");
+
+                    b.ToTable("ProductType");
+                });
+#pragma warning restore 612, 618
         }
     }
 }

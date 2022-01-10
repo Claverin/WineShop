@@ -7,6 +7,6 @@ namespace WineShop.Models
         [Key]
         public int ID_ProductType { get; set; }
         [Required]
-        public int Name { get; set; }
+        public string Name { get; set; }
     }
 }
