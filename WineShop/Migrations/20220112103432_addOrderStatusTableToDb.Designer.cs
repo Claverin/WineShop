@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WineShop.Data;
 
@@ -11,9 +12,10 @@ using WineShop.Data;
 namespace WineShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220112103432_addOrderStatusTableToDb")]
+    partial class addOrderStatusTableToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,25 +37,10 @@ namespace WineShop.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID_Manufacturer");
+
                     b.ToTable("Manufacturer");
                 });
 
-            modelBuilder.Entity("WineShop.Models.PaymentMethod", b =>
-            {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-                    b.ToTable("PaymentMethod");
-                });
-                
             modelBuilder.Entity("WineShop.Models.OrderStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +54,7 @@ namespace WineShop.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
                     b.ToTable("OrderStatus");
                 });
 
@@ -83,6 +71,7 @@ namespace WineShop.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID_ProductType");
+
                     b.ToTable("ProductType");
                 });
 
@@ -105,6 +94,7 @@ namespace WineShop.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
                     b.ToTable("Shipment");
                 });
 #pragma warning restore 612, 618
