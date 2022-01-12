@@ -10,6 +10,7 @@ namespace WineShop.Data
 
         }
         public DbSet<Manufacturer> Manufacturer { get; set; }
+        public DbSet<Shipment> Shipment { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
     }
 }
