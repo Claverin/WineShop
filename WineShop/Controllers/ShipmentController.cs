@@ -51,7 +51,6 @@ namespace WineShop.Controllers
             {
                 return NotFound();
             }
-
             return View(obj);
         }
 
@@ -70,7 +69,6 @@ namespace WineShop.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(obj);
-
         }
 
         //DELETE
