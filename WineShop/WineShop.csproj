@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\OrderStatus\" />
     <Folder Include="Views\ProductType\" />
   </ItemGroup>
 
