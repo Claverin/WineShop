@@ -22,20 +22,27 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">Manufacturer</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Product
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
+                                <li><a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">Manufacturer</a></li>
+                                <li><a class="nav-link" asp-area="" asp-controller="ProductType" asp-action="Index">Product Type</a></li>
+                                <li><a class="dropdown-devider"></a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="ProductType" asp-action="Index">Product Type</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a></li>
+                                <li><a class="nav-link" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a></li>
+                                <li><a class="nav-link" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a></li>
+                                <li><a class="dropdown-devider"></a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -55,6 +62,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -14,5 +14,6 @@ namespace WineShop.Data
         public DbSet<ProductType> ProductType { get; set; }
         public DbSet<PaymentMethod> PaymentMethod { get; set; }
         public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<Product> Product { get; set; }
     }
 }
