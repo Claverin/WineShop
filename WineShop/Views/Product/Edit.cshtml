@@ -1,0 +1,131 @@
+﻿@model WineShop.Models.ViewModels.ProductVM
+
+<form method="post" asp-action="Edit" enctype="multipart/form-data">
+    <input asp-for="Product.Image" hidden value="_"/>
+    <input asp-for="Product.Id" hidden />
+    <div class="border p-3">
+        <div class="form-group row">
+            <h2 class="text-info pl-3 mb-5">Edit Product</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.Name"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.Name" class="form-control"/>
+                        <span asp-validation-for="Product.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.Price"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.Price" id="priceBox" class="form-control"/>
+                        <span asp-validation-for="Product.Price" id="priceBox" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.YearOfProduction"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Product.YearOfProduction" class="form-control" />
+                        <span asp-validation-for="Product.YearOfProduction" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <textarea asp-for="Product.Description" class="form-control"></textarea>
+                        <span asp-validation-for="Product.Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.Image"></label>
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" id="imageBox" accept="image/png, image/gif, image/jpeg" multiple class="form-control" />
+                        <span asp-validation-for="Product.Image" id="imageError" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.IdManufacturer"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="Product.IdManufacturer" asp-items="@Model.ManufacturerSelectList" class="form-control">
+                            <option disabled selected>--Select Manufacturer--</option>
+                        </select>
+                        <span asp-validation-for="Product.IdManufacturer" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Product.IdProductType"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="Product.IdProductType" asp-items="@Model.ProductTypeSelectList" class="form-control">
+                            <option disabled selected>--Select Product Type--</option>
+                        </select>
+                        <span asp-validation-for="Product.IdProductType" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row mt-3">
+                    <div class="col-8 offset-4 row">
+                        <div class="col">
+                            <input type="submit" onclick="return validateInput()" class="btn btn-warning w-100" value="Edit"/>
+                        </div>
+                        <div class="col">
+                             <a asp-action="Index" class="btn btn-info w-100">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <img src="@WC.ImageProductPath@Model.Product.Image" class="w-100" style="border-radius:5px; border:1px solid #bbb" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        function validateInput() {
+            var filename = document.getElementById("imageBox").value;
+            if (filename == ""){
+                document.getElementById("imageError").innerHTML = "Upload Image";
+                return false;
+            }
+            
+            var filename = document.getElementById("imageBox").value;
+            if (filename == ""){
+                document.getElementById("imageError").innerHTML = "Upload Image";
+                return false;
+            }
+
+            var fileExtension = filename.split('.').pop();
+            console.log(fileExtension);
+            if (!['jpg', 'gif', 'png'].includes(fileExtension)){
+                document.getElementById("imageError").innerHTML = "Invalid file extension | Try .png .jpg .gif";
+                return false;
+            }
+
+            document.getElementById("imageError").innerHTML = "";
+            return true;
+        }
+
+
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /-?(?:\d+|\d{1,3}(?:[\s\,]\d{3})+)(?:[\,]\d+)?$/.test(value);
+        }
+    </script>
+}

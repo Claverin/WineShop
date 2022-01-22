@@ -5,7 +5,7 @@ namespace WineShop.Models
     public class ProductType
     {
         [Key]
-        public int ID_ProductType { get; set; }
+        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
     }
