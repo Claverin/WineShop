@@ -19,31 +19,46 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Product
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
-                                <li><a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">Manufacturer</a></li>
-                                <li><a class="nav-link" asp-area="" asp-controller="ProductType" asp-action="Index">Product Type</a></li>
-                                <li><a class="dropdown-devider"></a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Order
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @if (User.IsInRole(WC.AdminRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Product
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
+                                    <li><a class="nav-link" asp-area="" asp-controller="Manufacturer" asp-action="Index">Manufacturer</a></li>
+                                    <li><a class="nav-link" asp-area="" asp-controller="ProductType" asp-action="Index">Product Type</a></li>
+                                    <li><a class="dropdown-devider"></a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Shipment
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a></li>
+                                    <li><a class="nav-link" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a></li>
+                                    <li><a class="nav-link" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a></li>
+                                    <li><a class="dropdown-devider"></a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Create Admin User</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li><a class="nav-link" asp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
+                            @if (User.IsInRole(WC.CustomerRole))
+                            {
                                 <li><a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a></li>
-                                <li><a class="nav-link" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a></li>
-                                <li><a class="nav-link" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a></li>
-                                <li><a class="dropdown-devider"></a></li>
-                            </ul>
-                        </li>
+                            }
+                        }
                     </ul>
                     <partial name="_LoginPartial"/>
                 </div>
