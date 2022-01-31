@@ -8,11 +8,12 @@
         <div class="col-6">
             <h2 class="text-primary">Shipment List</h2>
         </div>
-        <div class="col-6" style="text-align:right;">
-            <a asp-controller="Shipment" asp-action="Create" class="btn btn-primary">
-                Add New Shipment
-            </a>
-        </div>
+        @if (User.IsInRole(WC.AdminRole))
+        {
+            <div class="col-6" style="text-align:right;">
+                <a asp-controller="Shipment" asp-action="Create" class="btn btn-primary">Add New Shipment</a>
+            </div>
+        }
     </div>
 
     <br /><br />
@@ -23,45 +24,49 @@
             <thead>
                 <tr>
                     <th>
-                        <label asp-for="@modelTemplate.Id"></label>
+                        Id
                     </th>
                     <th>
-                        <label asp-for="@modelTemplate.SendDate"></label>
+                        SendDate
                     </th>
                     <th>
-                        <label asp-for="@modelTemplate.DeliverDate"></label>
+                        DeliverDate
                     </th>
                     <th>
-                        <label asp-for="@modelTemplate.Details"></label>
+                        Details
                     </th>
+                    @if (User.IsInRole(WC.AdminRole)) { <th></th> }
                 </tr>
             </thead>
             <tbody>
                 @foreach(var Shipment in Model)
                 {
-                <tr>
-                    <td width="8%">@Shipment.Id</td>
-                    <td width="20%">@Shipment.SendDate</td>
-                    @if(Shipment.DeliverDate is null)
-                    {
-                        <td width="20%">Is not delivered</td>
-                    }
-                    else
-                    {
-                        <td width="20%">@Shipment.DeliverDate</td>
-                    }
-                    <td width="20%">@Shipment.Details</td>
-                    <td class="text-center">
-                        <div class="btn-group" role="group">
-                            <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Edit" class="btn btn-primary mx-1">
-                                <i class="fas fa-edit">Edit</i>  
-                            </a>
-                            <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Delete" class="btn btn-danger mx-1">
-                                <i class="far fa-trash-alt">Delete</i> 
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                    <tr>
+                        <td width="8%">@Shipment.Id</td>
+                        <td width="20%">@Shipment.SendDate</td>
+                        @if(Shipment.DeliverDate is null)
+                        {
+                            <td width="20%">Is not delivered</td>
+                        }
+                        else
+                        {
+                            <td width="20%">@Shipment.DeliverDate</td>
+                        }
+                        <td width="20%">@Shipment.Details</td>
+                        @if (User.IsInRole(WC.AdminRole))
+                        {
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Edit" class="btn btn-primary mx-1">
+                                        <i class="fas fa-edit">Edit</i>  
+                                    </a>
+                                    <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Delete" class="btn btn-danger mx-1">
+                                        <i class="far fa-trash-alt">Delete</i> 
+                                    </a>
+                                </div>
+                            </td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>

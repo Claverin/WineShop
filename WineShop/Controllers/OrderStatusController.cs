@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WineShop.Data;
 using WineShop.Models;
 
 namespace WineShop.Controllers
 {
+    [Authorize(Roles = WC.AdminRole)]
     public class OrderStatusController : Controller
     {
         private readonly ApplicationDbContext _db;

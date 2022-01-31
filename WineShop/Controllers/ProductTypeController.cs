@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WineShop.Data;
 using WineShop.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WineShop.Controllers
 {
+    [Authorize(Roles = WC.AdminRole)]
     public class ProductTypeController : Controller
     {
         private readonly ApplicationDbContext _db;

@@ -1,8 +1,128 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome!!!</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container text-center text-white" style="background-image: url('./wwwroot/images/mainPage/frontPicture.jpg')">
+    <!-- Wine -->
+    <div class="row col-12 vh-100">
+        <div class="col-4">
+            <img src="..." style="width:100%">
+            <div>
+                <h3>Red Wine</h3>
+                <p><b>We are selling wine of highest quality.</b></p>   
+            </div>
+        </div>
+        <div class="col-4">
+            <img src="..." style="width:100%">
+            <div>
+                <h3>White Wine</h3>
+                <p><b>It is really just about sharing our passion.</b></p>    
+            </div>
+        </div>
+        <div class="col-4">
+            <img src="..." style="width:100%">
+            <div>
+                <h3>Sparkling wine</h3>
+                <p><b>Thank you for your trust to our brand.</b></p>    
+            </div>
+        </div>
+    </div>
+    <!-- WineShop Information -->
+    <div class="row col-12 vh-100">
+        <h2 class="wide">WineShop</h2>
+        <p class="opacity"><i>We love wine</i></p>
+        <p class="justify">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue. Curabitur fermentum, augue placerat convallis euismod, turpis mauris malesuada neque, at luctus tortor felis sit amet dolor. In faucibus mi ut erat rutrum, ut facilisis arcu varius. Quisque risus lectus, condimentum ut tempus vel, vestibulum facilisis justo. Duis fringilla vestibulum leo, sit amet rutrum risus mattis ac. Aenean ullamcorper nulla eu ipsum elementum, non ultricies mauris rhoncus. Etiam non diam in mauris elementum ullamcorper id eu est. Aliquam diam magna, pulvinar ut neque sed, dignissim egestas dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer fringilla, elit a venenatis tincidunt, massa risus bibendum tellus, quis auctor risus lorem ultrices tortor.
+        </p>
+    </div>
+    <!-- About Us -->
+    <div class="row col-12 vh-100">
+        <div class="">
+            <h2>About us</h2>
+            <p><i>Lorem Ipsum!</i></p>
+            <br>
+            <p class="justify">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue. Curabitur fermentum, augue placerat convallis euismod, turpis mauris malesuada neque, at luctus tortor felis sit amet dolor. In faucibus mi ut erat rutrum, ut facilisis arcu varius. Quisque risus lectus, condimentum ut tempus vel, vestibulum facilisis justo.
+            </p>
+            <div class="row">
+                <div class="col-4">
+                    <p>Name</p>
+                    <img src="..." alt="Random Name">
+                </div>
+                <div class="col-4">
+                    <p>Name</p>
+                    <img src="..." alt="Random Name">
+                </div>
+                <div class="col-4">
+                    <p>Name</p>
+                    <img src="..." alt="Random Name">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--MoreAboutUs-->
+    <div class="row col-12 vh-100">
+        <div class="col-4">
+            <img src="..." style="width:100%" class="hover-opacity">
+            <div class="w3-container w3-white">
+                <p><b>New York</b></p>
+                <p class="opacity">Fri 27 Nov 2016</p>
+                <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
+                <button class="button" onclick="document.getElementById('').innerHTML=''">Buy Wine</button>
+            </div>
+        </div>
+        <div class="col-4">
+            <img src="..." style="width:100%" class="hover-opacity">
+            <div class="w3-container w3-white">
+                <p><b>Paris</b></p>
+                <p class="opacity">Fri 27 Nov 2016</p>
+                <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
+                <button class="button" onclick="document.getElementById('').innerHTML=''">Sell Wine</button>
+            </div>
+        </div>
+        <div class="col-4">
+            <img src="..." style="width:100%" class="hover-opacity">
+            <div class="w3-container w3-white">
+                <p><b>San Francisco</b></p>
+                <p class="opacity">Fri 27 Nov 2016</p>
+                <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
+                <button class="button" onclick="document.getElementById('').innerHTML=''">Earn Wine</button>
+            </div>
+        </div>
+    </div>
+    <!-- Contact -->
+    <div class="row col-12 vh-100">
+        <h2 class="wide">CONTACT</h2>
+        <div class="">
+            <div class="">
+                <i class="map-marker" style="width:30px"></i> Cracov, PL<br>
+                <i class="phone" style="width:30px"></i> Phone: +000 000 000<br>
+                <i class="envelope" style="width:30px"> </i> Email: mail@mail.com<br>
+            </div>
+            <div class="">
+                <form action="..." target="_blank">
+                    <div class="">
+                        <div class="">
+                            <input style="width:500px;" class="" type="text" placeholder="Name" required name="Name">
+                        </div>
+                        <div class="">
+                            <input style="width:500px;" class="" type="text" placeholder="Email" required name="Email">
+                        </div>
+                    </div>
+                    <input class="" style="width:439px;" type="text" placeholder="Message" required name="Message">
+                    <button class=""s tyle="width:50px;"  type="submit">SEND</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Image of location/map -->
+    <img src="..." class="row col-12 vh-100">
+    <!-- Footer -->
+    <footer class="row col-12 vh-40">
+      <i class="hover-opacity col-2">facebook</i>
+      <i class="hover-opacity col-2">instagram</i>
+      <i class="hover-opacity col-2">snapchat</i>
+      <i class="hover-opacity col-2">pinterest</i>
+      <i class="hover-opacity col-2">twitter</i>
+      <i class="hover-opacity col-2">linkedin</i>
+    </footer>
 </div>
