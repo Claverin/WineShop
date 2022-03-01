@@ -23,6 +23,17 @@ namespace WineShop.Controllers
             return View();
         }
 
+        public IActionResult Details(int id)
+        {
+            DetailsVM DetailsVM = new DetailsVM()
+            {
+                Product = _db.Product.Include(u => u.ProductType).Include(u => u.Manufacturer)
+                .Where(u => u.Id == id).FirstOrDefault(),
+                ExistsInCart = false
+            };
+            return View(DetailsVM);
+        }
+
         public IActionResult ShopSite()
         {
             HomeVM homeVM = new HomeVM()

@@ -8,6 +8,7 @@ using WineShop.Models.ViewModels;
 
 namespace WineShop.Controllers
 {
+    [Authorize(Roles = WC.AdminRole)]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -25,6 +26,7 @@ namespace WineShop.Controllers
             return View(productList);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         //CREATE
         public IActionResult Create()
         {

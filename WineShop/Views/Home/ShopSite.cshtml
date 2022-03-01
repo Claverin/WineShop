@@ -12,6 +12,9 @@
                 @obj.Name
             </button>
         }
+        <br />
+        <br />
+        <input type="text" id="searchByName" onkeyup="searchByName()" placeholder="Search for product.." title="Type in a name">
     </div>
     <br />
     <div class="row">
@@ -25,19 +28,56 @@
 
 @section Scripts{
     <script>
-    $(document).ready(function(){
-    $(".filter-button").click(function(){
-        var value = $(this).attr('data-filter');
-        if(value == "all")
+        var previewSearch = '';
+        var clickState = false;
+
+        function searchByName()
         {
-            $('.filter').show('1000');
+            var input = document.getElementById("searchByName").value;
+            var result = input.replace(' ','_');
+            result = result.toLowerCase();
+
+            if(input == '')
+            {
+                $('.filter').show('1000');
+            }
+            else
+            {
+                $(".filter").not('.'+result).hide('3000');
+                $('.filter').filter('.'+result).show('3000');
+            }
         }
-        else
-        {
-            $(".filter").not('.'+value).hide('3000');
-            $('.filter').filter('.'+value).show('3000');
-        }
-    });
-});
+
+        $(document).ready(function(){
+            $(".filter-button").click(function()
+            {
+                var value = $(this).attr('data-filter');
+                if(value == "all")
+                {
+                    $('.filter').show('1000');
+                }
+                else if(value == previewSearch)
+                {
+                    if(clickState == true)
+                    {
+                        clickState = false;
+                        $(".filter").not('.'+value).hide('3000');
+                        $('.filter').filter('.'+value).show('3000');
+                    }
+                    else
+                    {
+                        clickState = true;
+                        $('.filter').show('1000');
+                    }
+                }
+                else
+                {
+                    clickState = false;
+                    $(".filter").not('.'+value).hide('3000');
+                    $('.filter').filter('.'+value).show('3000');
+                }
+                previewSearch = value;
+             });
+         });
     </script>
 }
