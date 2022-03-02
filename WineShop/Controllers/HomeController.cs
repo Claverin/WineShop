@@ -4,6 +4,7 @@ using System.Diagnostics;
 using WineShop.Data;
 using WineShop.Models;
 using WineShop.Models.ViewModels;
+using WineShop.Utility;
 
 namespace WineShop.Controllers
 {
@@ -32,6 +33,22 @@ namespace WineShop.Controllers
                 ExistsInCart = false
             };
             return View(DetailsVM);
+        }
+
+        //Shoping Cart Session
+        [HttpPost,ActionName("Details")]
+        public IActionResult DetailsPost(int id)
+        {
+            List<ShoppingCart> shopingCartList = new List<ShoppingCart>();
+            if(HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
+                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            {
+                shopingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+            }
+            shopingCartList.Add(new ShoppingCart { ProductId = id });
+            HttpContext.Session.Set(WC.SessionCart, shopingCartList);
+
+            return View(nameof(ShopSite));
         }
 
         public IActionResult ShopSite()
