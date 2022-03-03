@@ -11,6 +11,13 @@ builder.Services.AddDbContext<ApplicationDbContext>( options => options.UseSqlSe
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders().AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(Options =>
+{
+    Options.IdleTimeout = TimeSpan.FromMinutes(10);
+    Options.Cookie.HttpOnly = true;
+    Options.Cookie.IsEssential = true;
+});
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
@@ -26,10 +33,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
