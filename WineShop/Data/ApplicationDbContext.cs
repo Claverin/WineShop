@@ -17,5 +17,6 @@ namespace WineShop.Data
         public DbSet<OrderStatus> OrderStatus { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<Comment> Comment { get; set; }
     }
 }
