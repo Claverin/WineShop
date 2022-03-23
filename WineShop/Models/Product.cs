@@ -30,5 +30,6 @@ namespace WineShop.Models
         public int IdProductType { get; set; }
         [ForeignKey("IdProductType")]
         public virtual ProductType? ProductType { get; set; }
+        public virtual List<Comment>? Comment { get; set; }
     }
 }

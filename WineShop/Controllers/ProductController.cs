@@ -26,8 +26,6 @@ namespace WineShop.Controllers
             return View(productList);
         }
 
-        [Authorize(Roles = WC.AdminRole)]
-        //CREATE
         public IActionResult Create()
         {
             IEnumerable<SelectListItem> manufacturerDropDown = _db.Manufacturer.Select(manufacturerItem => new SelectListItem
@@ -50,6 +48,7 @@ namespace WineShop.Controllers
             };
             return View(productVM);
         }
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Product product)
@@ -80,7 +79,6 @@ namespace WineShop.Controllers
             return Create();
         }
 
-        //EDIT
         public IActionResult Edit(int? id)
         {
             if (id == 0 || id is null)
@@ -115,6 +113,7 @@ namespace WineShop.Controllers
             return View(productVM);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Product product)
@@ -159,7 +158,6 @@ namespace WineShop.Controllers
             return Edit(product.Id);
         }
 
-        //DELETE
         public IActionResult Delete(int? id)
         {
             if (id == 0 || id is null)
@@ -194,6 +192,7 @@ namespace WineShop.Controllers
             return View(productVM);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirm(ProductVM productVM)

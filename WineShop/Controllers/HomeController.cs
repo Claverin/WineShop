@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WineShop.Data;
@@ -12,11 +14,13 @@ namespace WineShop.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _db = db;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -43,12 +47,15 @@ namespace WineShop.Controllers
                 shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
             }
 
-
-
             DetailsVM DetailsVM = new DetailsVM()
             {
-                Product = _db.Product.Include(u => u.ProductType).Include(u => u.Manufacturer)
-                .Where(u => u.Id == id).FirstOrDefault(),
+                Product = _db.Product
+                .Include(u => u.ProductType)
+                .Include(u => u.Manufacturer)
+                .Include(u => u.Comment)
+                .ThenInclude(u => u.ApplicationUser)
+                .Where(u => u.Id == id)
+                .FirstOrDefault(),
                 ExistsInCart = false
             };
 
@@ -97,9 +104,32 @@ namespace WineShop.Controllers
             return RedirectToAction(nameof(ShopSite));
         }
 
-        public IActionResult Privacy()
+        [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(Comment comment)
         {
-            return View();
+            comment.Date = DateTime.Now;
+            if (ModelState.IsValid)
+            {
+                _db.Comment.Add(comment);
+                _db.SaveChanges();
+            }
+            return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
+        }
+
+        [Authorize(Roles = WC.AdminRole)]
+        public IActionResult DeleteComment(int id)
+        {
+            var searchingComment = _db.Comment.Find(id);
+            if (searchingComment == null)
+            {
+                return NotFound();
+            }
+
+            _db.Comment.Remove(searchingComment);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(Details), new { id = searchingComment.IdProduct });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

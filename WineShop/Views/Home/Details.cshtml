@@ -1,10 +1,14 @@
 ﻿@model WineShop.Models.ViewModels.DetailsVM
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 
-<div class="">
-    <form method="post">
-        <input asp-for="@Model.Product.Id" hidden />
-        <div class="container pt-4">
-            <div class="card" style="border:2px solid #000000; ">
+    
+
+<div class="all">
+    <div class="container pt-4">
+        <div class="card" style="border:2px solid #000000; ">
+            <form method="post">
+                <input asp-for="@Model.Product.Id" hidden />
                 <div class="card-header m-0 row container" style="border-radius: 0px;">
                     <div class="col-12 col-md-6">
                         <h1 class="text-white">@Model.Product.Name</h1>
@@ -48,7 +52,62 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
+            <form method="post">
+                <input asp-for="Comment.IdCustomer" value="@UserManager.GetUserId(User)" hidden />
+                <input asp-for="Comment.IdProduct" value="@Model.Product.Id" hidden />
+                <input asp-for="Comment.ApplicationUser" value="@Model.ApplicationUser" hidden />
+                <input asp-for="Comment.Product" value="@Model.Product" hidden />
+
+                <div class="card-body p-0 m-0">
+                    <div class="container p-0 m-0">
+                        <div class="row col-12 p-0 pt-5 m-0">
+                            @if (Model.Product.Comment.Count > 0)
+                            {
+                                @foreach (var item in Model.Product.Comment.OrderByDescending(u => u.Date))
+                                {
+                                    <div class="row col-12 m-0 mb-5 p-3 bg-secondary">
+                                        <div class="col-2">
+                                            <img src="" style="width:50px; height:50px;"/>
+                                            <div>@item.ApplicationUser.Name</div>
+                                            <div>@item.ApplicationUser.Surname</div>
+                                        </div>
+                                        <div class="col-8" style="text-align:center;">
+                                            <div>@item.CommentContent</div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div style="text-align:right;">@item.Date</div>
+                                            <div class="col-3">
+                                                @if (item.ApplicationUser.Email == "user" || User.IsInRole(WC.AdminRole))
+                                                {
+                                                    <a asp-action="DeleteComment" asp-route-id="@item.Id" class="btn btn-outline-danger mt-2"  style="text-align:right;">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="p-3" style="text-align: center;">There is no comments for this product yet.</span>
+                            }
+                        </div>
+                        <div class="row col-12 m-0 ps-3 pe-3">
+                            <textarea asp-for="@Model.Comment.CommentContent" class="col-8" placeholder="Add comment as a @UserManager.GetUserName(User)"></textarea>
+                            <button type="submit" asp-action="AddComment" class="col-4 btn-danger btn-lg">Send</button>
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

@@ -7,6 +7,8 @@
             Product = new Product();
         }
         public Product Product { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+        public Comment Comment { get; set; }
         public bool ExistsInCart { get; set; }
     }
 }
