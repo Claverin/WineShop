@@ -2,8 +2,6 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<IdentityUser> UserManager
 
-    
-
 <div class="all">
     <div class="container pt-4">
         <div class="card" style="border:2px solid #000000; ">
@@ -22,6 +20,18 @@
                         <div class="row">
                             <div class="col-12 col-lg-4 p-2">
                                 <img src="@WC.ImageProductPath@Model.Product.Image" width="100%" class="rounded" />
+                                @if (User.IsInRole(WC.AdminRole) || User.IsInRole(WC.CustomerRole))
+                                {
+                                <hr>
+                                <div onmouseout="CRateSelected()" style="font:200%;">
+                                    <span class="fa-star fa-regular" id="Rate1" onclick="CRate(1)" onmouseover="CRateOver(1)" onmouseout="CRateOut(1)"></span>
+                                    <span class="fa-star fa-regular" id="Rate2" onclick="CRate(2)" onmouseover="CRateOver(2)" onmouseout="CRateOut(2)"></span>
+                                    <span class="fa-star fa-regular" id="Rate3" onclick="CRate(3)" onmouseover="CRateOver(3)" onmouseout="CRateOut(3)"></span>
+                                    <span class="fa-star fa-regular" id="Rate4" onclick="CRate(4)" onmouseover="CRateOver(4)" onmouseout="CRateOut(4)"></span>
+                                    <span class="fa-star fa-regular" id="Rate5" onclick="CRate(5)" onmouseover="CRateOver(5)" onmouseout="CRateOut(5)"></span>
+                                </div>
+                                <input type="hidden" name="Rating" id="Rating" value="@Model.UserRating"/>
+                                }
                             </div>
                             <div class="col-12 col-lg-8 p-2">
                                 <div class="row pl-3">
@@ -68,7 +78,7 @@
                                 {
                                     <div class="row col-12 m-0 mb-5 p-3 bg-secondary">
                                         <div class="col-2">
-                                            <img src="" style="width:50px; height:50px;"/>
+                                            <img src="@WC.ImageUserPath/blank.png" style="width:50px; height:50px;"/>
                                             <div>@item.ApplicationUser.Name</div>
                                             <div>@item.ApplicationUser.Surname</div>
                                         </div>
@@ -110,4 +120,57 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
+    <script>
+        document.body.onload = function () {
+            var setRating = $("#Rating").val();
+            for (var i = 1; i <= setRating; i++) {
+                $("#Rate" + i).attr('class', 'fa-star fa-solid');
+            }
+        }
+        function CRate(r) {
+            if (r == $("#Rating").val())
+            {
+                $("#Rating").val(0);
+                for (var i = r + 1; i <= 5; i++) {
+                    $("#Rate" + i).attr('class', 'fa-star fa-regular');
+                }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/RateProduct",
+                        data: { "id": @Model.Product.Id , "rate": $("#Rating").val() },
+                    });
+            }
+            else
+                {
+                    $("#Rating").val(r);
+                    for (var i = 1; i <= r; i++) {
+                        $("#Rate" + i).attr('class', 'fa-star fa-solid');
+                    }
+                    for (var i = r + 1; i <= 5; i++) {
+                        $("#Rate" + i).attr('class', 'fa-star fa-regular');
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/RateProduct",
+                        data: { "id": @Model.Product.Id , "rate": r },
+                    });
+                }
+        }
+        function CRateOver(r) {
+            for (var i = 1; i <= r; i++) {
+                $("#Rate" + i).attr('class', 'fa-star fa-solid');
+            }
+        }
+        function CRateOut(r) {
+            for (var i = 1; i <= r; i++) {
+                $("#Rate" + i).attr('class', 'fa-star fa-regular');
+            }
+        }
+        function CRateSelected() {
+            var setRating = $("#Rating").val();
+            for (var i = 1; i <= setRating; i++) {
+                $("#Rate" + i).attr('class', 'fa-star fa-solid');
+            }
+        }
+    </script>
 }
