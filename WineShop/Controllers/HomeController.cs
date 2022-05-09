@@ -32,13 +32,16 @@ namespace WineShop.Controllers
         {
             HomeVM homeVM = new HomeVM()
             {
-                Products = _db.Product.Include(u => u.ProductType).Include(u => u.Manufacturer),
+                Products = _db.Product
+                .Include(u => u.ProductType)
+                .Include(u => u.Rating)
+                .Include(u => u.Manufacturer),
                 ProductTypes = _db.ProductType
             };
             return View(homeVM);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> DetailsAsync(int id)
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
             if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
@@ -59,6 +62,16 @@ namespace WineShop.Controllers
                 ExistsInCart = false
             };
 
+            if (User.IsInRole(WC.CustomerRole) || User.IsInRole(WC.AdminRole))
+            {
+                var userName = HttpContext.User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(userName);
+
+                if (_db.Rating.Any(x => x.IdCustomer == user.Id && x.IdProduct == id))
+                {
+                    DetailsVM.UserRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault().RatingValue;
+                }
+            }
 
             foreach (var item in shoppingCartList)
             {
@@ -115,7 +128,7 @@ namespace WineShop.Controllers
                 _db.Comment.Add(comment);
                 _db.SaveChanges();
             }
-            return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
+            return RedirectToAction(nameof(DetailsAsync), new { id = comment.IdProduct });
         }
 
         [Authorize(Roles = WC.AdminRole)]
@@ -129,7 +142,38 @@ namespace WineShop.Controllers
 
             _db.Comment.Remove(searchingComment);
             _db.SaveChanges();
-            return RedirectToAction(nameof(Details), new { id = searchingComment.IdProduct });
+            return RedirectToAction(nameof(DetailsAsync), new { id = searchingComment.IdProduct });
+        }
+        
+        [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
+        public async Task<IActionResult> RateProduct(int id, int rate)
+        {
+            var userName = HttpContext.User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName);
+            if (rate == 0)
+            {
+                var productRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault();
+                _db.Rating.Remove(productRating);
+            }
+            else if (_db.Rating.Any(x => x.IdCustomer == user.Id && x.IdProduct == id))
+            {
+                var productRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault();
+                productRating.RatingValue = rate;
+                _db.Rating.Update(productRating);
+            }
+            else
+            {
+                var productRating = new Rating()
+                {
+                    IdProduct = id,
+                    RatingValue = rate,
+                    IdCustomer = user.Id,
+                };
+
+                _db.Rating.Add(productRating);
+            }
+            _db.SaveChanges();
+            return RedirectToAction(nameof(DetailsAsync), new { id });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

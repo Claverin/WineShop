@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WineShop.Data;
 
@@ -11,9 +12,10 @@ using WineShop.Data;
 namespace WineShop.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220324115511_RatingSystem")]
+    partial class RatingSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -377,7 +379,7 @@ namespace WineShop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("IdProduct")
+                    b.Property<int?>("IdProduct")
                         .HasColumnType("int");
 
                     b.Property<int>("RatingValue")
@@ -529,10 +531,8 @@ namespace WineShop.Migrations
                         .IsRequired();
 
                     b.HasOne("WineShop.Models.Product", "Product")
-                        .WithMany("Rating")
-                        .HasForeignKey("IdProduct")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("IdProduct");
 
                     b.Navigation("ApplicationUser");
 
@@ -542,8 +542,6 @@ namespace WineShop.Migrations
             modelBuilder.Entity("WineShop.Models.Product", b =>
                 {
                     b.Navigation("Comment");
-
-                    b.Navigation("Rating");
                 });
 #pragma warning restore 612, 618
         }
