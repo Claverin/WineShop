@@ -2,7 +2,6 @@
 
 This is a Wine Shop Web Application. As a guest you can browse the products, read comments about them or buy them. Other register users such as clients can comment or rate products. Employees registered as a Admins can manage existing products in shop, create new ones and manage commentary section if its necessary.
 
-# 🛑 Work in Progress 🛑
 ## Move into
 * [ERD Project of Website](#erd-project-of-website)
 * [Features](#features-)
