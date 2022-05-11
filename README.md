@@ -60,7 +60,7 @@ This is a Wine Shop Web Application. As a guest you can browse the products, rea
 ### Main Page
 ![MainPage](./Screenshots/mainPage.jpg)
 ### Shop Site
-![ShopSite](./Screenshots/ListOfProducts.png)
+![ShopSite](./Screenshots/wineShop.jpg)
 ### Product Details
 ![ProductDetails](./Screenshots/ListOfProducts.png)
 ### Comment Section
