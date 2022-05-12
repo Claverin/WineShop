@@ -61,21 +61,19 @@ This is a Wine Shop Web Application. As a guest you can browse the products, rea
 ![MainPage](./Screenshots/mainPage.jpg)
 ### Shop Site
 ![ShopSite](./Screenshots/wineShop.jpg)
-### Product Details
-![ProductDetails](./Screenshots/ListOfProducts.png)
-### Comment Section
-![CommentSection](./Screenshots/ListOfProducts.png)
+### Product Details with Comments
+![ProductDetails](./Screenshots/detailsOfShop.jpg)
 ### Cart with Products
-![CartWithProducts](./Screenshots/ListOfProducts.png)
+![CartWithProducts](./Screenshots/shopCart.jpg)
 ### Admin Profile
-![AdminProfile](./Screenshots/ListOfProducts.png)
+![AdminProfile](./Screenshots/ListOfProducts.jpg)
 ### User Profile
-![UserProfile](./Screenshots/ListOfProducts.png)
+![UserProfile](./Screenshots/ListOfProducts.jpg)
 ### Account Creation
-![AccountCreation](./Screenshots/ListOfProducts.png)
+![AccountCreation](./Screenshots/registerShop.jpg)
 ### Adding New Product
-![AddingNewProduct](./Screenshots/ListOfProducts.png)
+![AddingNewProduct](./Screenshots/addProduct.jpg)
 ### List of Products
-![ListOfProducts](./Screenshots/ListOfProducts.png)
+![ListOfProducts](./Screenshots/productList.jpg)
 
 # [:arrow_up_small: :arrow_up_small: BACK TO TOP :arrow_up_small: :arrow_up_small:](#wineshop-web-application-)
