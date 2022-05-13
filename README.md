@@ -65,10 +65,6 @@ This is a Wine Shop Web Application. As a guest you can browse the products, rea
 ![ProductDetails](./Screenshots/detailsOfShop.jpg)
 ### Cart with Products
 ![CartWithProducts](./Screenshots/shopCart.jpg)
-### Admin Profile
-![AdminProfile](./Screenshots/ListOfProducts.jpg)
-### User Profile
-![UserProfile](./Screenshots/ListOfProducts.jpg)
 ### Account Creation
 ![AccountCreation](./Screenshots/registerShop.jpg)
 ### Adding New Product
