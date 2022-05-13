@@ -212,6 +212,16 @@ namespace WineShop.Controllers
             }
 
             _db.Product.Remove(product);
+
+            foreach (var bookAuthor in _db.Rating.Where(x => x.IdProduct == productVM.Product.Id))
+            {
+                _db.Rating.Remove(bookAuthor);
+            }
+            foreach (var bookType in _db.Comment.Where(x => x.IdProduct == productVM.Product.Id))
+            {
+                _db.Comment.Remove(bookType);
+            }
+
             _db.SaveChanges();
             return RedirectToAction(nameof(Index));
         }

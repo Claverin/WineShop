@@ -71,6 +71,8 @@
                                 <li><a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a></li>
                             }
                         }
+                    </ul>
+                    <ul class="navbar-nav">
                         <li>
                             @if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart) != null)
                             {
@@ -88,8 +90,8 @@
                                 </a>
                             }
                         </li>
+                        <partial name="_LoginPartial"/>
                     </ul>
-                    <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>
@@ -100,8 +102,8 @@
         </main>
     </div>
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - WineShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="pt-5 mb-0 container">
+            &copy; 2022 - WineShop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
