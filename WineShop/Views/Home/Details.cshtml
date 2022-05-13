@@ -1,6 +1,18 @@
 ﻿@model WineShop.Models.ViewModels.DetailsVM
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<IdentityUser> UserManager
+@{
+    var averageRating = default(double);
+    var numberOfComments = Model.Product.Rating.Count();
+    if (numberOfComments > 0)
+    {
+        foreach (var bookRating in Model.Product.Rating)
+        {
+            averageRating += bookRating.RatingValue;
+        }
+        averageRating = averageRating / numberOfComments;
+    }
+}
 
 <div class="all">
     <div class="container pt-4">
@@ -20,26 +32,38 @@
                         <div class="row">
                             <div class="col-12 col-lg-4 p-2">
                                 <img src="@WC.ImageProductPath@Model.Product.Image" width="100%" class="rounded" />
-                                @if (User.IsInRole(WC.AdminRole) || User.IsInRole(WC.CustomerRole))
-                                {
-                                <hr>
-                                <div onmouseout="CRateSelected()" style="font:200%;">
-                                    <span class="fa-star fa-regular" id="Rate1" onclick="CRate(1)" onmouseover="CRateOver(1)" onmouseout="CRateOut(1)"></span>
-                                    <span class="fa-star fa-regular" id="Rate2" onclick="CRate(2)" onmouseover="CRateOver(2)" onmouseout="CRateOut(2)"></span>
-                                    <span class="fa-star fa-regular" id="Rate3" onclick="CRate(3)" onmouseover="CRateOver(3)" onmouseout="CRateOut(3)"></span>
-                                    <span class="fa-star fa-regular" id="Rate4" onclick="CRate(4)" onmouseover="CRateOver(4)" onmouseout="CRateOut(4)"></span>
-                                    <span class="fa-star fa-regular" id="Rate5" onclick="CRate(5)" onmouseover="CRateOver(5)" onmouseout="CRateOut(5)"></span>
-                                </div>
-                                <input type="hidden" name="Rating" id="Rating" value="@Model.UserRating"/>
-                                }
                             </div>
                             <div class="col-12 col-lg-8 p-2">
                                 <div class="row pl-3">
-                                    <div class="col-12">
+                                    <div class="col-12" style="text-align:right;">
                                         <span class="badge p-3 border" >@Model.Product.ProductType.Name</span>
                                         <span class="badge p-3 border" >@Model.Product.Manufacturer.Name</span>
-                                        <p class="pt-3">@Html.Raw(Model.Product.Description) </p>
+                                        <p class="pt-3" style="text-align:justify;">@Html.Raw(Model.Product.Description)</p>
                                     </div>
+                                    @if (User.IsInRole(WC.AdminRole) || User.IsInRole(WC.CustomerRole))
+                                    {
+                                    <hr>
+                                    <div onmouseout="CRateSelected()" style="text-align:center; font-size:200%;">
+                                        <span class="fa-star fa-regular" id="Rate1" onclick="CRate(1)" onmouseover="CRateOver(1)" onmouseout="CRateOut(1)"></span>
+                                        <span class="fa-star fa-regular" id="Rate2" onclick="CRate(2)" onmouseover="CRateOver(2)" onmouseout="CRateOut(2)"></span>
+                                        <span class="fa-star fa-regular" id="Rate3" onclick="CRate(3)" onmouseover="CRateOver(3)" onmouseout="CRateOut(3)"></span>
+                                        <span class="fa-star fa-regular" id="Rate4" onclick="CRate(4)" onmouseover="CRateOver(4)" onmouseout="CRateOut(4)"></span>
+                                        <span class="fa-star fa-regular" id="Rate5" onclick="CRate(5)" onmouseover="CRateOver(5)" onmouseout="CRateOut(5)"></span>
+                                    </div>
+                                    <input type="hidden" name="Rating" id="Rating" value="@Model.UserRating"/>
+                                    }
+                                    @if (averageRating == null)
+                                    {
+                                        <span class="badge">
+                                            No Ratings
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge">
+                                            @averageRating/5 (@numberOfComments Rates)
+                                        </span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -104,11 +128,18 @@
                                 <span class="p-3" style="text-align: center;">There is no comments for this product yet.</span>
                             }
                         </div>
-                        <div class="row col-12 m-0 ps-3 pe-3">
-                            <textarea asp-for="@Model.Comment.CommentContent" class="col-8" placeholder="Add comment as a @UserManager.GetUserName(User)"></textarea>
-                            <button type="submit" asp-action="AddComment" class="col-4 btn-danger btn-lg">Send</button>
-                            <div asp-validation-summary="All" class="text-danger"></div>
-                        </div>
+                            @if (User.IsInRole(WC.AdminRole) || User.IsInRole(WC.CustomerRole))
+                            {
+                                <div class="row col-12 m-0 ps-3 pe-3">
+                                    <textarea asp-for="@Model.Comment.CommentContent" class="col-8" placeholder="Add comment as a @UserManager.GetUserName(User)"></textarea>
+                                    <button type="submit" asp-action="AddComment" class="col-4 btn-danger btn-lg">Send</button>
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-12 pt-3 pb-3 border" style="text-align:center;">Please register to add comment</div>
+                            }
                     </div>
                 </div>
             </form>

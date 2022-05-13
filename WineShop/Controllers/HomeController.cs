@@ -41,7 +41,7 @@ namespace WineShop.Controllers
             return View(homeVM);
         }
 
-        public async Task<IActionResult> DetailsAsync(int id)
+        public async Task<IActionResult> Details(int id)
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
             if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
@@ -56,6 +56,7 @@ namespace WineShop.Controllers
                 .Include(u => u.ProductType)
                 .Include(u => u.Manufacturer)
                 .Include(u => u.Comment)
+                .Include(u => u.Rating)
                 .ThenInclude(u => u.ApplicationUser)
                 .Where(u => u.Id == id)
                 .FirstOrDefault(),
@@ -128,7 +129,7 @@ namespace WineShop.Controllers
                 _db.Comment.Add(comment);
                 _db.SaveChanges();
             }
-            return RedirectToAction(nameof(DetailsAsync), new { id = comment.IdProduct });
+            return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
         }
 
         [Authorize(Roles = WC.AdminRole)]
@@ -142,7 +143,7 @@ namespace WineShop.Controllers
 
             _db.Comment.Remove(searchingComment);
             _db.SaveChanges();
-            return RedirectToAction(nameof(DetailsAsync), new { id = searchingComment.IdProduct });
+            return RedirectToAction(nameof(Details), new { id = searchingComment.IdProduct });
         }
         
         [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
@@ -173,7 +174,7 @@ namespace WineShop.Controllers
                 _db.Rating.Add(productRating);
             }
             _db.SaveChanges();
-            return RedirectToAction(nameof(DetailsAsync), new { id });
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
