@@ -361,5 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/WineShop/wwwroot/images/product
-/WineShop/wwwroot/images/mainPage

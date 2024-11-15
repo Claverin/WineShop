@@ -1,136 +1,134 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<div class="container text-center text-white" style="background-image: url('./wwwroot/images/mainPage/frontPicture.jpg')">
-    <!-- Wine -->
-    <div class="row col-12 vh-100">
-        <h1 style="font-family:Helvetica;">Welcome in WineShop</h1>
-        <h5 style="font-family:Helvetica;">Have a sit and try our products</h5>
-        <div class="col-4">
-            <img src="@WC.ImageMainPage/w1.png" style="height:25%;"/>
-            <div>
-                <h3>Red Wine</h3>
-                <p><b>We are selling wine of highest quality.</b></p>   
-            </div>
+<div>
+    <!-- Wine Section -->
+    <div class="row min-vh-100 align-items-center">
+        <h1 class="w-100 mb-0" style="font-family: Helvetica;">Welcome to WineShop</h1>
+        <div class="col-md-12 mb-1">
+            <img src="@WC.ImageMainPage/main.png" alt="Main Wine Image" style="mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);">
+            <p><strong>Have a seat and taste our products.</strong></p>
         </div>
-        <div class="col-4">
-            <img src="@WC.ImageMainPage/w2.png" style="height:25%;"/>
-            <div>
-                <h3>White Wine</h3>
-                <p><b>It is really just about sharing our passion.</b></p>    
-            </div>
+        <div class="col-md-4 mb-5">
+            <img src="@WC.ImageMainPage/w1.png" alt="Red Wine" class="img-fluid" style="height: 25%;">
+            <h3>Red Wine</h3>
+            <p><strong>We are selling wine of the highest quality.</strong></p>
         </div>
-        <div class="col-4">
-            <img src="@WC.ImageMainPage/w3.png" style="height:25%;"/>
-            <div>
-                <h3>Sparkling wine</h3>
-                <p><b>Thank you for your trust to our brand.</b></p>    
-            </div>
+        <div class="col-md-4 mb-5">
+            <img src="@WC.ImageMainPage/w2.png" alt="White Wine" class="img-fluid" style="height: 25%;">
+            <h3>White Wine</h3>
+            <p><strong>It is really just about sharing our passion.</strong></p>
+        </div>
+        <div class="col-md-4 mb-5">
+            <img src="@WC.ImageMainPage/w3.png" alt="Sparkling Wine" class="img-fluid" style="height: 25%;">
+            <h3>Sparkling Wine</h3>
+            <p><strong>Thank you for your trust in our brand.</strong></p>
         </div>
     </div>
-    <hr />
+    <hr>
+
     <!-- WineShop Information -->
-    <div class="row col-12 vh-100">
-        <h2 class="wide">WineShop</h2>
-        <p class="opacity"><i>We love wine</i></p>
-        <p class="justify">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue. Curabitur fermentum, augue placerat convallis euismod, turpis mauris malesuada neque, at luctus tortor felis sit amet dolor. In faucibus mi ut erat rutrum, ut facilisis arcu varius. Quisque risus lectus, condimentum ut tempus vel, vestibulum facilisis justo. Duis fringilla vestibulum leo, sit amet rutrum risus mattis ac. Aenean ullamcorper nulla eu ipsum elementum, non ultricies mauris rhoncus. Etiam non diam in mauris elementum ullamcorper id eu est. Aliquam diam magna, pulvinar ut neque sed, dignissim egestas dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer fringilla, elit a venenatis tincidunt, massa risus bibendum tellus, quis auctor risus lorem ultrices tortor.
-        </p>
+    <div class="row min-vh-100 align-items-center text-left">
+        <div class="col-12">
+            <h2>WineShop</h2>
+            <p><em>We love wine</em></p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue. Curabitur fermentum, augue placerat convallis euismod, turpis mauris malesuada neque, at luctus tortor felis sit amet dolor.
+            </p>
+        </div>
     </div>
-    <hr />
-    <!-- About Us -->
-    <div class="row col-12 vh-100">
-        <div class="">
-            <h2>About us</h2>
-            <p><i>Lorem Ipsum!</i></p>
-            <br>
-            <p class="justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue. Curabitur fermentum, augue placerat convallis euismod, turpis mauris malesuada neque, at luctus tortor felis sit amet dolor. In faucibus mi ut erat rutrum, ut facilisis arcu varius. Quisque risus lectus, condimentum ut tempus vel, vestibulum facilisis justo.
+    <hr>
+
+    <!-- About Us Section -->
+    <div class="row min-vh-100 align-items-center text-left">
+        <div class="col-12">
+            <h2>About Us</h2>
+            <p><em>Lorem Ipsum!</em></p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus porta luctus metus, consequat mattis purus fringilla sed. Duis enim risus, cursus at ipsum ut, ultricies euismod augue. Suspendisse a ipsum ac velit ultrices dignissim. Sed pretium, eros a tincidunt finibus, libero lorem pellentesque tortor, ac dictum libero lectus at augue.
             </p>
             <div class="row">
-                <div class="col-4">
+                <div class="col-md-4 text-center">
                     <p>Name Surname</p>
-                    <img src="@WC.ImageUserPath/blank.png" style="width:50px; height:50px;"/>
+                    <img src="@WC.ImageUserPath/blank.png" alt="User Profile" class="rounded-circle" style="width: 50px; height: 50px;">
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 text-center">
                     <p>Name Surname</p>
-                    <img src="@WC.ImageUserPath/blank.png" style="width:50px; height:50px;"/>
+                    <img src="@WC.ImageUserPath/blank.png" alt="User Profile" class="rounded-circle" style="width: 50px; height: 50px;">
                 </div>
-                <div class="col-4">
+                <div class="col-md-4 text-center">
                     <p>Name Surname</p>
-                    <img src="@WC.ImageUserPath/blank.png" style="width:50px; height:50px;"/>
+                    <img src="@WC.ImageUserPath/blank.png" alt="User Profile" class="rounded-circle" style="width: 50px; height: 50px;">
                 </div>
             </div>
         </div>
     </div>
-    <hr />
-    <!--MoreAboutUs-->
-    <div class="row col-12 vh-100">
-        <div class="col-4">
-            <img src="..." style="width:100%" class="hover-opacity">
-            <div class="w3-container w3-white">
-                <p><b>New York</b></p>
+    <hr>
+
+    <!-- More About Us -->
+    <div class="row min-vh-100 align-items-center">
+        <div class="col-md-4">
+            <img src="@WC.ImageMainPage/NewYork.jpg" alt="New York Image" class="img-fluid hover-opacity">
+            <div class="bg-white text-dark p-3">
+                <p><strong>New York</strong></p>
                 <p class="opacity">Fri 27 Nov 2016</p>
                 <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                <button class="button" onclick="document.getElementById('').innerHTML=''">Buy Wine</button>
+                <button class="btn btn-primary">Buy Wine</button>
             </div>
         </div>
-        <div class="col-4">
-            <img src="..." style="width:100%" class="hover-opacity">
-            <div class="w3-container w3-white">
-                <p><b>Paris</b></p>
+        <div class="col-md-4">
+            <img src="@WC.ImageMainPage/Paris.jpg" alt="New York Image" class="img-fluid hover-opacity">
+            <div class="bg-white text-dark p-3">
+                <p><strong>Paris</strong></p>
                 <p class="opacity">Fri 27 Nov 2016</p>
                 <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                <button class="button" onclick="document.getElementById('').innerHTML=''">Sell Wine</button>
+                <button class="btn btn-primary">Sell Wine</button>
             </div>
         </div>
-        <div class="col-4">
-            <img src="..." style="width:100%" class="hover-opacity">
-            <div class="w3-container w3-white">
-                <p><b>San Francisco</b></p>
+        <div class="col-md-4">
+            <img src="@WC.ImageMainPage/SanFrancisco.jpg" alt="New York Image" class="img-fluid hover-opacity">
+            <div class="bg-white text-dark p-3">
+                <p><strong>San Francisco</strong></p>
                 <p class="opacity">Fri 27 Nov 2016</p>
                 <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                <button class="button" onclick="document.getElementById('').innerHTML=''">Earn Wine</button>
+                <button class="btn btn-primary">Earn Wine</button>
             </div>
         </div>
     </div>
-    <hr />
-    <!-- Contact -->
-    <div class="row col-12 vh-100">
-        <h2 class="wide">CONTACT</h2>
-        <div class="">
-            <div class="">
-                <i class="map-marker" style="width:30px"></i> Cracov, PL<br>
-                <i class="phone" style="width:30px"></i> Phone: +000 000 000<br>
-                <i class="envelope" style="width:30px"> </i> Email: mail@mail.com<br>
-            </div>
-            <div class="">
-                <form action="..." target="_blank">
-                    <div class="">
-                        <div class="">
-                            <input style="width:500px;" class="" type="text" placeholder="Name" required name="Name">
-                        </div>
-                        <div class="">
-                            <input style="width:500px;" class="" type="text" placeholder="Email" required name="Email">
-                        </div>
-                    </div>
-                    <input class="" style="width:439px;" type="text" placeholder="Message" required name="Message">
-                    <button class=""s tyle="width:50px;"  type="submit">SEND</button>
-                </form>
-            </div>
+    <hr>
+
+    <!-- Contact Section -->
+    <div class="row min-vh-100 align-items-center text-left">
+        <div class="col-12">
+            <h2>Contact</h2>
+            <p><i class="fa fa-map-marker" style="width:30px"></i> Cracov, PL</p>
+            <p><i class="fa fa-phone" style="width:30px"></i> Phone: +000 000 000</p>
+            <p><i class="fa fa-envelope" style="width:30px"></i> Email: mail@mail.com</p>
+            <form action="..." target="_blank">
+                <div class="mb-3">
+                    <input class="form-control" type="text" placeholder="Name" required name="Name">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="email" placeholder="Email" required name="Email">
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" placeholder="Message" required name="Message"></textarea>
+                </div>
+                <button class="btn btn-primary" type="submit">SEND</button>
+            </form>
         </div>
     </div>
-    <hr />
-    <!-- Image of location/map -->
-    <div class="row col-12 vh-100" id="map"></div>
-    <hr />
+    <hr>
+
     <!-- Footer -->
-    <footer class="row col-12 vh-40" style="padding-top:20px;">
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-facebook"></i></a></h1>
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-instagram"></i></a></h1>
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-snapchat"></i></a></h1>
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-pinterest"></i></a></h1>
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-twitter"></i></a></h1>
-      <h1 class="hover-opacity col-2"><a href="https://www.google.pl"><i class="fa-brands fa-linkedin"></i></a></h1>
+    <footer class="row align-items-center py-4">
+        <div class="col text-center">
+            <a href="https://www.facebook.com" class="text-white"><i class="fab fa-facebook fa-2x"></i></a>
+            <a href="https://www.instagram.com" class="text-white"><i class="fab fa-instagram fa-2x"></i></a>
+            <a href="https://www.snapchat.com" class="text-white"><i class="fab fa-snapchat fa-2x"></i></a>
+            <a href="https://www.pinterest.com" class="text-white"><i class="fab fa-pinterest fa-2x"></i></a>
+            <a href="https://www.twitter.com" class="text-white"><i class="fab fa-twitter fa-2x"></i></a>
+            <a href="https://www.linkedin.com" class="text-white"><i class="fab fa-linkedin fa-2x"></i></a>
+        </div>
     </footer>
 </div>
