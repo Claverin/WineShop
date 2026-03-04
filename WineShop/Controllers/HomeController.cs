@@ -23,22 +23,41 @@ public class HomeController : Controller
 
     public IActionResult Index() => View();
 
-    public IActionResult ShopSite()
+    public IActionResult ShopSite(int? typeId, int page = 1, int pageSize = 12)
     {
-        var homeVM = new HomeVM
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 60);
+
+        var query = _db.Product
+            .AsNoTracking()
+            .Include(p => p.ProductType)
+            .Include(p => p.Rating)
+            .Include(p => p.Manufacturer)
+            .AsQueryable();
+
+        if (typeId.HasValue)
+            query = query.Where(p => p.IdProductType == typeId.Value);
+
+        var total = query.Count();
+
+        var products = query
+            .OrderBy(p => p.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var vm = new HomeVM
         {
-            Products = _db.Product
-                .AsNoTracking()
-                .Include(p => p.ProductType)
-                .Include(p => p.Rating)
-                .Include(p => p.Manufacturer)
-                .ToList(),
-            ProductTypes = _db.ProductType
-                .AsNoTracking()
-                .ToList()
+            Products = products,
+            ProductTypes = _db.ProductType.AsNoTracking().ToList(),
+
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = total,
+            TypeId = typeId
         };
 
-        return View(homeVM);
+        return View(vm);
     }
 
     public async Task<IActionResult> Details(int id)
