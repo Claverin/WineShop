@@ -1,7 +1,9 @@
-﻿@model WineShop.Models.ViewModels.DetailsVM
+@model WineShop.Models.ViewModels.DetailsVM
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 @inject UserManager<IdentityUser> UserManager
 @{
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var averageRating = default(double);
     var numberOfComments = Model.Product.Rating.Count();
     if (numberOfComments > 0)
@@ -112,7 +114,7 @@
                                         <div class="col-2">
                                             <div style="text-align:right;">@item.Date</div>
                                             <div class="col-3">
-                                                @if (item.ApplicationUser.Email == "user" || User.IsInRole(WC.AdminRole))
+                                                @if (User.IsInRole(WC.AdminRole) || (!string.IsNullOrEmpty(currentUserId) && currentUserId == item.IdCustomer))
                                                 {
                                                     <a asp-action="DeleteComment" asp-route-id="@item.Id" class="btn btn-outline-danger mt-2"  style="text-align:right;">
                                                         <i class="fas fa-trash"></i>
