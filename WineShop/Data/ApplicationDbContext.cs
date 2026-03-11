@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WineShop.Models;
 
@@ -6,10 +6,10 @@ namespace WineShop.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
-
         }
+
         public DbSet<Manufacturer> Manufacturer { get; set; }
         public DbSet<Shipment> Shipment { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
@@ -19,17 +19,57 @@ namespace WineShop.Data
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Comment> Comment { get; set; }
         public DbSet<Rating> Rating { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Order>()
+                .Property(x => x.TotalAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(x => x.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.PaymentMethod)
+                .WithMany()
+                .HasForeignKey(x => x.PaymentMethodId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.OrderStatus)
+                .WithMany()
+                .HasForeignKey(x => x.OrderStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.Shipment)
+                .WithMany()
+                .HasForeignKey(x => x.ShipmentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(x => x.Order)
+                .WithMany(x => x.Items)
+                .HasForeignKey(x => x.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
                     Id = 1,
                     Name = "Cabernet Sauvignon",
-                    Description = "A full-bodied red wine with rich notes of blackcurrant, subtle spices, and a smooth finish. Perfect for pairing with hearty meals.",
+                    Description = "A full-bodied red wine with rich notes of blackcurrant, subtle spices, and a smooth finish.\nPerfect for pairing with hearty meals.",
                     Price = 29.99M,
                     IdManufacturer = 1,
                     IdProductType = 1,
@@ -39,7 +79,7 @@ namespace WineShop.Data
                 {
                     Id = 2,
                     Name = "Chardonnay",
-                    Description = "A crisp and refreshing white wine with delicate buttery undertones and a hint of citrus. Ideal for warm evenings or light dishes.",
+                    Description = "A crisp and refreshing white wine with delicate buttery undertones and a hint of citrus.\nIdeal for warm evenings or light dishes.",
                     Price = 19.99M,
                     IdManufacturer = 2,
                     IdProductType = 2,
@@ -49,7 +89,7 @@ namespace WineShop.Data
                 {
                     Id = 3,
                     Name = "Prosecco",
-                    Description = "A sparkling wine with vibrant bubbles and fresh flavors of green apple and pear. Celebrate life's moments with its joyful character.",
+                    Description = "A sparkling wine with vibrant bubbles and fresh flavors of green apple and pear.\nCelebrate life's moments with its joyful character.",
                     Price = 15.99M,
                     IdManufacturer = 2,
                     IdProductType = 3,
@@ -58,38 +98,29 @@ namespace WineShop.Data
             );
 
             modelBuilder.Entity<Manufacturer>().HasData(
-                new Manufacturer
-                {
-                    Id = 1,
-                    Name = "Red Vineyards",
-                    Country = "France"
-                },
-                new Manufacturer
-                {
-                    Id = 2,
-                    Name = "Golden Valley",
-                    Country = "USA"
-                }
+                new Manufacturer { Id = 1, Name = "Red Vineyards", Country = "France" },
+                new Manufacturer { Id = 2, Name = "Golden Valley", Country = "USA" }
             );
 
             modelBuilder.Entity<ProductType>().HasData(
-                new ProductType
-                {
-                    Id = 1,
-                    Name = "Red Wine"
-                },
-                new ProductType
-                {
-                    Id = 2,
-                    Name = "White Wine"
-                },
-                new ProductType
-                {
-                    Id = 3,
-                    Name = "Sparkling Wine"
-                }
+                new ProductType { Id = 1, Name = "Red Wine" },
+                new ProductType { Id = 2, Name = "White Wine" },
+                new ProductType { Id = 3, Name = "Sparkling Wine" }
+            );
+
+            modelBuilder.Entity<PaymentMethod>().HasData(
+                new PaymentMethod { Id = 1, Name = "Card" },
+                new PaymentMethod { Id = 2, Name = "Cash on delivery" },
+                new PaymentMethod { Id = 3, Name = "Bank transfer" }
+            );
+
+            modelBuilder.Entity<OrderStatus>().HasData(
+                new OrderStatus { Id = 1, Name = "Pending" },
+                new OrderStatus { Id = 2, Name = "Paid" },
+                new OrderStatus { Id = 3, Name = "Shipped" },
+                new OrderStatus { Id = 4, Name = "Delivered" },
+                new OrderStatus { Id = 5, Name = "Cancelled" }
             );
         }
-
     }
 }
