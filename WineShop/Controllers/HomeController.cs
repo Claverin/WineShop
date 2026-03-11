@@ -17,19 +17,22 @@ public class HomeController : Controller
     private readonly ICartService _cartService;
     private readonly IRatingService _ratingService;
     private readonly ICommentService _commentService;
+    private readonly IProductDetailsService _productDetailsService;
 
     public HomeController(
     ILogger<HomeController> logger,
     ApplicationDbContext db,
     ICartService cartService,
     IRatingService ratingService,
-    ICommentService commentService)
+    ICommentService commentService,
+    IProductDetailsService productDetailsService)
     {
         _logger = logger;
         _db = db;
         _cartService = cartService;
         _ratingService = ratingService;
         _commentService = commentService;
+        _productDetailsService = productDetailsService;
     }
 
     public IActionResult Index() => View();
@@ -73,23 +76,12 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        DetailsVM detailsVM = new()
-        {
-            Product = _db.Product
-                .Include(u => u.ProductType)
-                .Include(u => u.Manufacturer)
-                .Include(u => u.Comment)
-                .Include(u => u.Rating)
-                .ThenInclude(u => u.ApplicationUser)
-                .FirstOrDefault(u => u.Id == id),
-            ExistsInCart = _cartService.Contains(id)
-        };
-
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var detailsVM = await _productDetailsService.GetAsync(id, userId);
 
-        if (!string.IsNullOrEmpty(userId))
+        if (detailsVM is null)
         {
-            detailsVM.UserRating = await _ratingService.GetUserRatingAsync(userId, id);
+            return NotFound();
         }
 
         return View(detailsVM);
