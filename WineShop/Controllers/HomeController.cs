@@ -7,7 +7,6 @@ using WineShop.Data;
 using WineShop.Models;
 using WineShop.Models.ViewModels;
 using WineShop.Services.Interfaces;
-using WineShop.Utility;
 
 namespace WineShop.Controllers;
 
@@ -17,17 +16,20 @@ public class HomeController : Controller
     private readonly ApplicationDbContext _db;
     private readonly ICartService _cartService;
     private readonly IRatingService _ratingService;
+    private readonly ICommentService _commentService;
 
     public HomeController(
     ILogger<HomeController> logger,
     ApplicationDbContext db,
     ICartService cartService,
-    IRatingService ratingService)
+    IRatingService ratingService,
+    ICommentService commentService)
     {
         _logger = logger;
         _db = db;
         _cartService = cartService;
         _ratingService = ratingService;
+        _commentService = commentService;
     }
 
     public IActionResult Index() => View();
@@ -115,27 +117,28 @@ public class HomeController : Controller
     public async Task<IActionResult> AddComment(Comment comment)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         if (string.IsNullOrEmpty(userId))
+        {
             return Forbid();
+        }
 
         if (comment.IdProduct is null)
+        {
             return BadRequest();
+        }
 
         if (!ModelState.IsValid)
-            return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
-
-        var newComment = new Comment
         {
-            Date = DateTime.UtcNow,
-            CommentContent = comment.CommentContent,
-            IdCustomer = userId,
-            IdProduct = comment.IdProduct
-        };
+            return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
+        }
 
-        _db.Comment.Add(newComment);
-        await _db.SaveChangesAsync();
+        var productId = await _commentService.AddAsync(
+            userId,
+            comment.IdProduct.Value,
+            comment.CommentContent ?? string.Empty);
 
-        return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
+        return RedirectToAction(nameof(Details), new { id = productId });
     }
 
     [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
@@ -143,27 +146,26 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteComment(int id)
     {
-        var comment = await _db.Comment.FirstOrDefaultAsync(c => c.Id == id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
-        if (comment is null)
+        var result = await _commentService.DeleteAsync(id, userId, User.IsInRole(WC.AdminRole));
+
+        if (result.Status == DeleteCommentStatus.NotFound)
         {
             return NotFound();
         }
 
-        if (!User.IsInRole(WC.AdminRole))
+        if (result.Status == DeleteCommentStatus.Forbidden)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId) || userId != comment.IdCustomer)
-            {
-                return Forbid();
-            }
+            return Forbid();
         }
 
-        _db.Comment.Remove(comment);
-        await _db.SaveChangesAsync();
+        if (result.ProductId is null)
+        {
+            return RedirectToAction(nameof(ShopSite));
+        }
 
-        return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
+        return RedirectToAction(nameof(Details), new { id = result.ProductId });
     }
 
     [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]

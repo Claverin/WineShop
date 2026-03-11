@@ -15,6 +15,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddSession(Options =>
 {
     Options.IdleTimeout = TimeSpan.FromMinutes(10);
