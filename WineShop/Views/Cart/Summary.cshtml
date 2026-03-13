@@ -1,92 +1,99 @@
-﻿@model WineShop.Models.ViewModels.ProductUserVM
+@model WineShop.Models.ViewModels.CheckoutVM
 
-<form method="post">
-    <br />
-    <div class="backgroundWhiteBorder">
-        <div class="container">
-            <div class="card">
-                <div class="card-header text-light m-0 row container">
-                    <div class="col-6">
-                        <i class="fa fa-shopping-cart"></i> &nbsp;
-                        Order Summary
-                    </div>
-                    <div class="col-6" style="text-align:right;">
-                        <a a asp-action="Index" asp-controller="Cart" class="btn btn-outline-info btn-sm">Back to Cart</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="container rounded p-2">
+@{
+    ViewData["Title"] = "Order Summary";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Order Summary</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Cart</a>
+    </div>
+
+    <form asp-action="Summary" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="mb-3">Customer Details</h4>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Street" class="form-label"></label>
+                            <input asp-for="Street" class="form-control" />
+                            <span asp-validation-for="Street" class="text-danger"></span>
+                        </div>
+
                         <div class="row">
-                            <div class="col-12 col-lg-7 pb-4">
-                                <div class="row">
-                                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-info">User Details:</span>
-                                    </h4>
-                                </div>
-                                <div class="row my-1">
-                                    <div class="col-3">
-                                        <label>Name</label>
-                                    </div>
-                                    <div class="col-9">
-                                        <input asp-for="ApplicationUser.Name" type="text" class="form-control" />
-                                        <span asp-validation-for="ApplicationUser.Name" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row my-1">
-                                    <div class="col-3">
-                                        <label>Phone</label>
-                                    </div>
-                                    <div class="col-9">
-                                        <input asp-for="ApplicationUser.PhoneNumber" type="text" class="form-control" />
-                                        <span asp-validation-for="ApplicationUser.PhoneNumber" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row my-1">
-                                    <div class="col-3">
-                                        <label>Email</label>
-                                    </div>
-                                    <div class="col-9">
-                                        <input asp-for="ApplicationUser.Email" type="text" class="form-control" />
-                                        <span asp-validation-for="ApplicationUser.Email" class="text-danger"></span>
-                                    </div>
-                                </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="PostalCode" class="form-label"></label>
+                                <input asp-for="PostalCode" class="form-control" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
                             </div>
-                            <div class="col-12 col-lg-5 row">
-                                <div class="col-12">
-                                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-info">Summary:</span>
-                                    </h4>
-                                    <ul class="list-group mb-3">
-                                        @foreach (var obj in Model.ProductList)
-                                        {
-                                            <input type="hidden" asp-for=@obj.Id/>
-                                            <input type="hidden" asp-for=@obj.Name/>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <div>
-                                                    <h6 class="my-0">@obj.Name</h6>
-                                                    <small class="text-muted">Price: @obj.Price zł</small>
-                                                </div>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-12 col-md-5 offset-md-7">
-                            <button type="submit" class="btn btn-primary form-control">Submit Inquiry</button>
+
+                        <div class="mb-3">
+                            <label asp-for="PaymentMethodId" class="form-label"></label>
+                            <select asp-for="PaymentMethodId" asp-items="Model.PaymentMethods" class="form-select"></select>
+                            <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="mb-3">Summary</h4>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <span>@item.Name</span>
+                                <strong>@item.Price.ToString("0.00") zł</strong>
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between pt-3">
+                            <span class="fw-bold">Total</span>
+                            <span class="fw-bold">@Model.TotalAmount.ToString("0.00") zł</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-4">Place Order</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
-
-@section Scripts{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

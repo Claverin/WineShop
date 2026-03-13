@@ -8,5 +8,7 @@ namespace WineShop.Services.Interfaces
         void Add(int productId);
         void Remove(int productId);
         List<ShoppingCart> GetAll();
+        List<int> GetProductIds();
+        void Clear();
     }
 }

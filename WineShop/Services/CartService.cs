@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using WineShop.Models;
 using WineShop.Services.Interfaces;
 using WineShop.Utility;
@@ -33,6 +34,16 @@ namespace WineShop.Services
         public List<ShoppingCart> GetAll()
         {
             return CartSession.GetCart(Session);
+        }
+
+        public List<int> GetProductIds()
+        {
+            return CartSession.GetProductIds(Session);
+        }
+
+        public void Clear()
+        {
+            Session.Remove(WC.SessionCart);
         }
     }
 }
