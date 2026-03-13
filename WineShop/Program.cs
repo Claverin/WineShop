@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WineShop.Data;
 using WineShop.Services;
 using WineShop.Services.Interfaces;
+using WineShop.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ builder.Services.AddSession(Options =>
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
+
+await IdentitySeeder.SeedRolesAsync(app.Services);
 
 if (app.Environment.IsDevelopment())
 {
