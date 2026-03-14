@@ -28,7 +28,7 @@ namespace WineShop.Services
                 .OrderBy(x => x.Name)
                 .ToListAsync();
 
-            var user = await _db.ApplicationUser
+            var user = await _db.ApplicationUsers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == userId);
 

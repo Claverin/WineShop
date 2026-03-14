@@ -16,14 +16,14 @@ namespace WineShop.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -87,8 +87,11 @@ namespace WineShop.Areas.Identity.Pages.Account
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
+                var isFirstUser = !await _userManager.Users.AnyAsync();
+
                 var user = new ApplicationUser
                 {
                     UserName = Input.Email,
@@ -98,10 +101,11 @@ namespace WineShop.Areas.Identity.Pages.Account
                     Age = Input.Age,
                     PhoneNumber = Input.PhoneNumber
                 };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
-                    var isFirstUser = !await _userManager.Users.AnyAsync();
                     var roleToAssign = isFirstUser
                         ? WC.AdminRole
                         : User.IsInRole(WC.AdminRole)
@@ -137,16 +141,17 @@ namespace WineShop.Areas.Identity.Pages.Account
                         {
                             return RedirectToAction("Index");
                         }
+
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

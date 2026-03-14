@@ -4,11 +4,9 @@ using WineShop.Models;
 
 namespace WineShop.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
-        {
-        }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options){}
 
         public DbSet<Manufacturer> Manufacturer { get; set; }
         public DbSet<Shipment> Shipment { get; set; }
@@ -16,7 +14,7 @@ namespace WineShop.Data
         public DbSet<PaymentMethod> PaymentMethod { get; set; }
         public DbSet<OrderStatus> OrderStatus { get; set; }
         public DbSet<Product> Product { get; set; }
-        public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Comment> Comment { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Order> Order { get; set; }

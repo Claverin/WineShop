@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WineShop.Data;
+using WineShop.Models;
 using WineShop.Services;
 using WineShop.Services.Interfaces;
 using WineShop.Utility;
@@ -10,9 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
         ));
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddDefaultTokenProviders().AddDefaultUI()
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
@@ -45,9 +49,9 @@ await DbInitializer.InitializeAsync(app.Services);
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
