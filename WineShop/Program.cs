@@ -29,29 +29,19 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 
-await IdentitySeeder.SeedRolesAsync(app.Services);
-
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
-    app.UseHsts();
-
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    for (var i = 0; i < 10; i++)
-    {
-        try
-        {
-            db.Database.Migrate();
-            break;
-        }
-        catch
-        {
-            Thread.Sleep(2000);
-        }
-    }
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+await DbInitializer.InitializeAsync(app.Services);
 
 app.UseStaticFiles();
 app.UseRouting();
