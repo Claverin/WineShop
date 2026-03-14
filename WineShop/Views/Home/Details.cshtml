@@ -1,7 +1,7 @@
 @model WineShop.Models.ViewModels.DetailsVM
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-@inject UserManager<IdentityUser> UserManager
+@inject UserManager<ApplicationUser> UserManager
 @{
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var averageRating = default(double);
@@ -19,8 +19,9 @@
 <div class="all">
     <div class="container pt-4">
         <div class="card" style="border:2px solid #000000; ">
-            <form method="post">
-                <input asp-for="@Model.Product.Id" hidden />
+            <form method="post" id="cartAndRatingForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Product.Id" />
                 <div class="card-header m-0 row container" style="border-radius: 0px;">
                     <div class="col-12 col-md-6">
                         <h1 class="text-white">@Model.Product.Name</h1>
@@ -52,7 +53,7 @@
                                         <span class="fa-star fa-regular" id="Rate4" onclick="CRate(4)" onmouseover="CRateOver(4)" onmouseout="CRateOut(4)"></span>
                                         <span class="fa-star fa-regular" id="Rate5" onclick="CRate(5)" onmouseover="CRateOver(5)" onmouseout="CRateOut(5)"></span>
                                     </div>
-                                    <input type="hidden" name="Rating" id="Rating" value="@Model.UserRating"/>
+                                    <input type="hidden" name="rate" id="Rating" value="@Model.UserRating" />
                                     }
                                     @if (averageRating == null)
                                     {
@@ -79,17 +80,18 @@
                         <div class="col-12 col-md-6">
                             @if (Model.ExistsInCart)
                             {
-                                <a asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</a>
+                                <button type="submit" asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</button>
                             }
                             else
                             {
-                                <button type="submit" asp-route-id="@Model.Product.Id" class="btn btn-info form-control btn-lg" style="height:50px;">Add to Cart</button>
+                                <button type="submit" asp-action="Details" asp-route-id="@Model.Product.Id" class="btn btn-info form-control btn-lg" style="height:50px;">Add to Cart</button>
                             }
                         </div>
                     </div>
                 </div>
             </form>
             <form method="post">
+                @Html.AntiForgeryToken()
                 <input asp-for="Comment.IdCustomer" value="@UserManager.GetUserId(User)" hidden />
                 <input asp-for="Comment.IdProduct" value="@Model.Product.Id" hidden />
                 <input asp-for="Comment.ApplicationUser" value="@Model.ApplicationUser" hidden />
@@ -114,11 +116,11 @@
                                         <div class="col-2">
                                             <div style="text-align:right;">@item.Date</div>
                                             <div class="col-3">
-                                                @if (User.IsInRole(WC.AdminRole) || (!string.IsNullOrEmpty(currentUserId) && currentUserId == item.IdCustomer))
+                                                @if (User.IsInRole(WC.AdminRole) || UserManager.GetUserId(User) == item.IdCustomer)
                                                 {
-                                                    <a asp-action="DeleteComment" asp-route-id="@item.Id" class="btn btn-outline-danger mt-2"  style="text-align:right;">
+                                                    <button type="submit" asp-action="DeleteComment" asp-route-id="@item.Id" class="btn btn-outline-danger mt-2" style="text-align:right;">
                                                         <i class="fas fa-trash"></i>
-                                                    </a>
+                                                    </button>
                                                 }
                                             </div>
                                         </div>
@@ -156,51 +158,60 @@
     <script>
         document.body.onload = function () {
             var setRating = $("#Rating").val();
+
             for (var i = 1; i <= setRating; i++) {
                 $("#Rate" + i).attr('class', 'fa-star fa-solid');
             }
         }
+
+        function sendRating() {
+            $.ajax({
+                type: "POST",
+                url: "/Home/RateProduct",
+                data: $("#cartAndRatingForm").serialize()
+            });
+        }
+
         function CRate(r) {
-            if (r == $("#Rating").val())
-            {
+            if (r == $("#Rating").val()) {
                 $("#Rating").val(0);
+
                 for (var i = r + 1; i <= 5; i++) {
                     $("#Rate" + i).attr('class', 'fa-star fa-regular');
                 }
-                    $.ajax({
-                        type: "POST",
-                        url: "/Home/RateProduct",
-                        data: { "id": @Model.Product.Id , "rate": $("#Rating").val() },
-                    });
+
+                sendRating();
             }
-            else
-                {
-                    $("#Rating").val(r);
-                    for (var i = 1; i <= r; i++) {
-                        $("#Rate" + i).attr('class', 'fa-star fa-solid');
-                    }
-                    for (var i = r + 1; i <= 5; i++) {
-                        $("#Rate" + i).attr('class', 'fa-star fa-regular');
-                    }
-                    $.ajax({
-                        type: "POST",
-                        url: "/Home/RateProduct",
-                        data: { "id": @Model.Product.Id , "rate": r },
-                    });
+            else {
+                $("#Rating").val(r);
+
+                for (var i = 1; i <= r; i++) {
+                    $("#Rate" + i).attr('class', 'fa-star fa-solid');
                 }
+
+                for (var i = r + 1; i <= 5; i++) {
+                    $("#Rate" + i).attr('class', 'fa-star fa-regular');
+                }
+
+                sendRating();
+            }
         }
+
         function CRateOver(r) {
             for (var i = 1; i <= r; i++) {
                 $("#Rate" + i).attr('class', 'fa-star fa-solid');
             }
         }
+
         function CRateOut(r) {
             for (var i = 1; i <= r; i++) {
                 $("#Rate" + i).attr('class', 'fa-star fa-regular');
             }
         }
+
         function CRateSelected() {
             var setRating = $("#Rating").val();
+
             for (var i = 1; i <= setRating; i++) {
                 $("#Rate" + i).attr('class', 'fa-star fa-solid');
             }
