@@ -28,7 +28,8 @@ namespace WineShop.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var productIds = _cartService.GetProductIds();
+            var cartItems = _cartService.GetAll();
+            var productIds = cartItems.Select(x => x.ProductId).ToList();
 
             var products = await _db.Product
                 .AsNoTracking()
@@ -36,7 +37,25 @@ namespace WineShop.Controllers
                 .OrderBy(x => x.Name)
                 .ToListAsync();
 
-            return View(products);
+            var vm = new CartVM
+            {
+                Items = products.Select(x =>
+                {
+                    var quantity = cartItems.First(y => y.ProductId == x.Id).Quantity;
+
+                    return new CartItemVM
+                    {
+                        ProductId = x.Id,
+                        Name = x.Name,
+                        Description = x.Description,
+                        Image = x.Image,
+                        Price = x.Price,
+                        Quantity = quantity
+                    };
+                }).ToList()
+            };
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -103,6 +122,22 @@ namespace WineShop.Controllers
             }
 
             return RedirectToAction(nameof(Confirmation), new { id = orderId.Value });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Increase(int id)
+        {
+            _cartService.Increase(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Decrease(int id)
+        {
+            _cartService.Decrease(id);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]

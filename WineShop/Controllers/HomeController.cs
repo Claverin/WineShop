@@ -91,7 +91,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DetailsPost(int id)
     {
-        _cartService.Add(id);
+        _cartService.Add(id, 1);
         return RedirectToAction(nameof(ShopSite));
     }
 

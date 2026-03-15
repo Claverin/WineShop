@@ -21,9 +21,24 @@ namespace WineShop.Services
             return CartSession.Contains(Session, productId);
         }
 
-        public void Add(int productId)
+        public int GetQuantity(int productId)
         {
-            CartSession.Add(Session, productId);
+            return CartSession.GetQuantity(Session, productId);
+        }
+
+        public void Add(int productId, int quantity = 1)
+        {
+            CartSession.Add(Session, productId, quantity);
+        }
+
+        public void Increase(int productId)
+        {
+            CartSession.Increase(Session, productId);
+        }
+
+        public void Decrease(int productId)
+        {
+            CartSession.Decrease(Session, productId);
         }
 
         public void Remove(int productId)

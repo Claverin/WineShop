@@ -76,8 +76,11 @@
                         @foreach (var item in Model.Items)
                         {
                             <div class="d-flex justify-content-between border-bottom py-2">
-                                <span>@item.Name</span>
-                                <strong>@item.Price.ToString("0.00") zł</strong>
+                                <div>
+                                    <div>@item.Name</div>
+                                    <small class="text-muted">@item.Quantity x @item.Price.ToString("0.00") zł</small>
+                                </div>
+                                <strong>@item.LineTotal.ToString("0.00") zł</strong>
                             </div>
                         }
 
