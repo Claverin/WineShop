@@ -89,10 +89,10 @@ public class HomeController : Controller
 
     [HttpPost, ActionName("Details")]
     [ValidateAntiForgeryToken]
-    public IActionResult DetailsPost(int id)
+    public IActionResult DetailsPost(int id, int quantity)
     {
-        _cartService.Add(id, 1);
-        return RedirectToAction(nameof(ShopSite));
+        _cartService.Add(id, Math.Max(1, quantity));
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     [HttpPost]
