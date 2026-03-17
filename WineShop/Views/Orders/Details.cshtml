@@ -1,0 +1,91 @@
+@model WineShop.Models.ViewModels.AdminOrderDetailsVM
+
+@{
+    ViewData["Title"] = $"Order #{Model.OrderId}";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Order #@Model.OrderId</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Orders</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-3">Customer</h4>
+
+                    <div class="mb-2"><strong>Name:</strong> @Model.CustomerName</div>
+                    <div class="mb-2"><strong>Email:</strong> @Model.CustomerEmail</div>
+                    <div class="mb-2"><strong>Phone:</strong> @Model.CustomerPhoneNumber</div>
+                    <div class="mb-2"><strong>Address:</strong> @Model.Street, @Model.PostalCode @Model.City</div>
+                    <div class="mb-2"><strong>Created:</strong> @Model.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+                    <div class="mb-2"><strong>Payment:</strong> @Model.PaymentMethodName</div>
+                    <div class="mb-0"><strong>Total:</strong> @Model.TotalAmount.ToString("0.00") zł</div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Items</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Unit Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.UnitPrice.ToString("0.00") zł</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.LineTotal.ToString("0.00") zł</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-3">Admin Actions</h4>
+
+                    <form asp-action="Update" method="post">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="OrderId" type="hidden" />
+
+                        <div class="mb-3">
+                            <label asp-for="OrderStatusId" class="form-label"></label>
+                            <select asp-for="OrderStatusId" asp-items="Model.Statuses" class="form-select"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ShipmentId" class="form-label"></label>
+                            <select asp-for="ShipmentId" asp-items="Model.Shipments" class="form-select"></select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                    </form>
+
+                    <hr />
+
+                    <div class="mb-2"><strong>Current status:</strong> @Model.CurrentStatusName</div>
+                    <div class="mb-2"><strong>Shipment sent:</strong> @(Model.ShipmentSendDate?.ToString("yyyy-MM-dd") ?? "-")</div>
+                    <div class="mb-0"><strong>Shipment delivered:</strong> @(Model.ShipmentDeliverDate?.ToString("yyyy-MM-dd") ?? "-")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

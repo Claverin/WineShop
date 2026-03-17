@@ -32,6 +32,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="ShopSite">Shop</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Orders" asp-action="Index">Manage Orders</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Product
@@ -44,14 +47,13 @@
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Shipment
+                                <a class="nav-link dropdown-toggle" href="#" id="shippingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Shipping
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="nav-link" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment</a></li>
-                                    <li><a class="nav-link" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a></li>
-                                    <li><a class="nav-link" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a></li>
-                                    <li><a class="dropdown-devider"></a></li>
+                                <ul class="dropdown-menu" aria-labelledby="shippingDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Shipment" asp-action="Index">Shipment Overview</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="OrderStatus" asp-action="Index">Order Status</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="PaymentMethod" asp-action="Index">Payment Method</a></li>
                                 </ul>
                             </li>
                             <li>
@@ -77,8 +79,8 @@
                             @if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart) != null)
                             {
                                 <a asp-action="Index" asp-controller="Cart" class="nav-link">
-                                    @{ 
-                                        var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart).Count;
+                                    @{
+                                        var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart).Sum(x => x.Quantity);
                                     }
                                     <i class="fas fa-shopping-cart"></i> &nbsp; (@count)
                                 </a>

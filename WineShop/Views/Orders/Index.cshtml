@@ -1,0 +1,56 @@
+@model IEnumerable<WineShop.Models.ViewModels.AdminOrderListItemVM>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Orders</h2>
+        <a asp-controller="Shipment" asp-action="Index" class="btn btn-outline-secondary">Shipments</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info mb-0">No orders found.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Total</th>
+                        <th>Created</th>
+                        <th>Shipment</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>#@item.OrderId</td>
+                            <td>
+                                <div>@item.CustomerName</div>
+                                <small class="text-muted">@item.CustomerEmail</small>
+                            </td>
+                            <td>@item.StatusName</td>
+                            <td>@item.PaymentMethodName</td>
+                            <td>@item.TotalAmount.ToString("0.00") zł</td>
+                            <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@(item.HasShipment ? "Assigned" : "None")</td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.OrderId" class="btn btn-primary btn-sm">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
