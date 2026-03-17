@@ -1,4 +1,4 @@
-﻿namespace WineShop.Models.ViewModels
+namespace WineShop.Models.ViewModels
 {
     public class DetailsVM
     {
@@ -6,6 +6,7 @@
         {
             Product = new Product();
         }
+        public int CartQuantity { get; set; }
         public Product Product { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
         public Comment Comment { get; set; }

@@ -1,39 +1,120 @@
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using WineShop.Models;
 
-namespace WineShop.Utility;
-
-public static class CartSession
+namespace WineShop.Utility
 {
-    public static List<ShoppingCart> GetCart(ISession session)
-        => session.Get<List<ShoppingCart>>(WC.SessionCart) ?? new List<ShoppingCart>();
-
-    public static void SaveCart(ISession session, List<ShoppingCart> cart)
-        => session.Set(WC.SessionCart, cart);
-
-    public static bool Contains(ISession session, int productId)
-        => GetCart(session).Any(x => x.ProductId == productId);
-
-    public static void Add(ISession session, int productId)
+    public static class CartSession
     {
-        var cart = GetCart(session);
-        if (cart.Any(x => x.ProductId == productId))
-            return;
+        public static List<ShoppingCart> GetCart(ISession session)
+        {
+            var cartJson = session.GetString(WC.SessionCart);
 
-        cart.Add(new ShoppingCart { ProductId = productId });
-        SaveCart(session, cart);
+            if (string.IsNullOrEmpty(cartJson))
+            {
+                return new List<ShoppingCart>();
+            }
+
+            return JsonConvert.DeserializeObject<List<ShoppingCart>>(cartJson) ?? new List<ShoppingCart>();
+        }
+
+        public static void SetCart(ISession session, List<ShoppingCart> cart)
+        {
+            session.SetString(WC.SessionCart, JsonConvert.SerializeObject(cart));
+        }
+
+        public static List<int> GetProductIds(ISession session)
+        {
+            return GetCart(session)
+                .Select(x => x.ProductId)
+                .ToList();
+        }
+
+        public static bool Contains(ISession session, int productId)
+        {
+            return GetCart(session).Any(x => x.ProductId == productId);
+        }
+
+        public static int GetQuantity(ISession session, int productId)
+        {
+            return GetCart(session)
+                .FirstOrDefault(x => x.ProductId == productId)?.Quantity ?? 0;
+        }
+
+        public static void Add(ISession session, int productId, int quantity = 1)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+
+            if (item is null)
+            {
+                cart.Add(new ShoppingCart
+                {
+                    ProductId = productId,
+                    Quantity = Math.Max(1, quantity)
+                });
+            }
+            else
+            {
+                item.Quantity += Math.Max(1, quantity);
+            }
+
+            SetCart(session, cart);
+        }
+
+        public static void Increase(ISession session, int productId)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+
+            if (item is null)
+            {
+                cart.Add(new ShoppingCart
+                {
+                    ProductId = productId,
+                    Quantity = 1
+                });
+            }
+            else
+            {
+                item.Quantity++;
+            }
+
+            SetCart(session, cart);
+        }
+
+        public static void Decrease(ISession session, int productId)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+
+            if (item is null)
+            {
+                return;
+            }
+
+            item.Quantity--;
+
+            if (item.Quantity <= 0)
+            {
+                cart.Remove(item);
+            }
+
+            SetCart(session, cart);
+        }
+
+        public static void Remove(ISession session, int productId)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(x => x.ProductId == productId);
+
+            if (item is null)
+            {
+                return;
+            }
+
+            cart.Remove(item);
+            SetCart(session, cart);
+        }
     }
-
-    public static void Remove(ISession session, int productId)
-    {
-        var cart = GetCart(session);
-        var item = cart.FirstOrDefault(x => x.ProductId == productId);
-        if (item is null) return;
-
-        cart.Remove(item);
-        SaveCart(session, cart);
-    }
-
-    public static List<int> GetProductIds(ISession session)
-        => GetCart(session).Select(x => x.ProductId).Distinct().ToList();
 }

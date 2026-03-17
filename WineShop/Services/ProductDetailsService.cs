@@ -41,7 +41,8 @@ namespace WineShop.Services
             var vm = new DetailsVM
             {
                 Product = product,
-                ExistsInCart = _cartService.Contains(productId)
+                ExistsInCart = _cartService.Contains(productId),
+                CartQuantity = _cartService.GetQuantity(productId)
             };
 
             if (!string.IsNullOrEmpty(userId))

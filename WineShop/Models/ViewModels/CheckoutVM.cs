@@ -38,6 +38,6 @@ namespace WineShop.Models.ViewModels
         public List<CheckoutItemVM> Items { get; set; } = new();
         public IEnumerable<SelectListItem> PaymentMethods { get; set; } = new List<SelectListItem>();
 
-        public decimal TotalAmount => Items.Sum(x => x.Price);
+        public decimal TotalAmount => Items.Sum(x => x.LineTotal);
     }
 }

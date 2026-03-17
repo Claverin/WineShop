@@ -20,7 +20,8 @@ namespace WineShop.Services
 
         public async Task<CheckoutVM> BuildCheckoutAsync(string userId)
         {
-            var productIds = _cartService.GetProductIds();
+            var cartItems = _cartService.GetAll();
+            var productIds = cartItems.Select(x => x.ProductId).ToList();
 
             var products = await _db.Product
                 .AsNoTracking()
@@ -63,18 +64,25 @@ namespace WineShop.Services
                 City = string.Empty,
                 PaymentMethodId = defaultPaymentMethodId,
                 PaymentMethods = paymentMethods,
-                Items = products.Select(x => new CheckoutItemVM
+                Items = products.Select(x =>
                 {
-                    ProductId = x.Id,
-                    Name = x.Name,
-                    Price = x.Price
+                    var quantity = cartItems.First(y => y.ProductId == x.Id).Quantity;
+
+                    return new CheckoutItemVM
+                    {
+                        ProductId = x.Id,
+                        Name = x.Name,
+                        Price = x.Price,
+                        Quantity = quantity
+                    };
                 }).ToList()
             };
         }
 
         public async Task<int?> PlaceOrderAsync(CheckoutVM model, string userId)
         {
-            var productIds = _cartService.GetProductIds();
+            var cartItems = _cartService.GetAll();
+            var productIds = cartItems.Select(x => x.ProductId).ToList();
 
             if (!productIds.Any())
             {
@@ -112,12 +120,17 @@ namespace WineShop.Services
                 return null;
             }
 
-            var items = products.Select(x => new OrderItem
+            var items = products.Select(x =>
             {
-                ProductId = x.Id,
-                ProductName = x.Name,
-                UnitPrice = x.Price,
-                Quantity = 1
+                var quantity = cartItems.First(y => y.ProductId == x.Id).Quantity;
+
+                return new OrderItem
+                {
+                    ProductId = x.Id,
+                    ProductName = x.Name,
+                    UnitPrice = x.Price,
+                    Quantity = quantity
+                };
             }).ToList();
 
             var order = new Order

@@ -19,7 +19,7 @@
 <div class="all">
     <div class="container pt-4">
         <div class="card" style="border:2px solid #000000; ">
-            <form method="post" id="cartAndRatingForm">
+            <form method="post" id="cartAndRatingForm" data-rate-url="@Url.Action("RateProduct", "Home")">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Product.Id" />
                 <div class="card-header m-0 row container" style="border-radius: 0px;">
@@ -72,20 +72,52 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <a asp-action="ShopSite" class="btn btn-success btn-square form-control btn-lg" style="height:50px;">Back to List</a>
+                <div class="card-footer details-footer">
+                    <div class="details-actions">
+                        <div class="details-actions-top">
+                            <div>
+                                <div class="details-actions-title">Cart actions</div>
+
+                                @if (Model.CartQuantity > 0)
+                                {
+                                    <div class="details-actions-subtitle">
+                                        In cart: <strong>@Model.CartQuantity</strong>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="details-actions-subtitle">
+                                        This product is not in your cart yet
+                                    </div>
+                                }
+                            </div>
+
+                            <a asp-action="ShopSite" class="btn btn-outline-light details-back-btn">
+                                Back to List
+                            </a>
                         </div>
-                        <div class="col-12 col-md-6">
-                            @if (Model.ExistsInCart)
-                            {
-                                <button type="submit" asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</button>
-                            }
-                            else
-                            {
-                                <button type="submit" asp-action="Details" asp-route-id="@Model.Product.Id" class="btn btn-info form-control btn-lg" style="height:50px;">Add to Cart</button>
-                            }
+
+                        <div class="details-cart-panel">
+                            <div class="small text-secondary mb-2">Quantity</div>
+
+                            <div class="quantity-control mb-3">
+                                <button type="button" class="btn btn-outline-light quantity-btn" onclick="changeQuantity(-1)">-</button>
+                                <input type="number" id="quantityInput" name="quantity" value="1" min="1" class="form-control quantity-input" />
+                                <button type="button" class="btn btn-outline-light quantity-btn" onclick="changeQuantity(1)">+</button>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" asp-action="Details" asp-route-id="@Model.Product.Id" class="btn btn-info btn-lg details-btn">
+                                    Add to Cart
+                                </button>
+
+                                @if (Model.CartQuantity > 0)
+                                {
+                                    <button type="submit" asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-outline-warning details-btn">
+                                        Remove from Cart
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -151,70 +183,7 @@
     </div>
 </div>
 
-@section Scripts{
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
-    <script>
-        document.body.onload = function () {
-            var setRating = $("#Rating").val();
-
-            for (var i = 1; i <= setRating; i++) {
-                $("#Rate" + i).attr('class', 'fa-star fa-solid');
-            }
-        }
-
-        function sendRating() {
-            $.ajax({
-                type: "POST",
-                url: "/Home/RateProduct",
-                data: $("#cartAndRatingForm").serialize()
-            });
-        }
-
-        function CRate(r) {
-            if (r == $("#Rating").val()) {
-                $("#Rating").val(0);
-
-                for (var i = r + 1; i <= 5; i++) {
-                    $("#Rate" + i).attr('class', 'fa-star fa-regular');
-                }
-
-                sendRating();
-            }
-            else {
-                $("#Rating").val(r);
-
-                for (var i = 1; i <= r; i++) {
-                    $("#Rate" + i).attr('class', 'fa-star fa-solid');
-                }
-
-                for (var i = r + 1; i <= 5; i++) {
-                    $("#Rate" + i).attr('class', 'fa-star fa-regular');
-                }
-
-                sendRating();
-            }
-        }
-
-        function CRateOver(r) {
-            for (var i = 1; i <= r; i++) {
-                $("#Rate" + i).attr('class', 'fa-star fa-solid');
-            }
-        }
-
-        function CRateOut(r) {
-            for (var i = 1; i <= r; i++) {
-                $("#Rate" + i).attr('class', 'fa-star fa-regular');
-            }
-        }
-
-        function CRateSelected() {
-            var setRating = $("#Rating").val();
-
-            for (var i = 1; i <= setRating; i++) {
-                $("#Rate" + i).attr('class', 'fa-star fa-solid');
-            }
-        }
-    </script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/product-details.js"></script>
 }

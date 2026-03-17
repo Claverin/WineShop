@@ -1,5 +1,5 @@
-@using System.Linq
-@model IEnumerable<WineShop.Models.Product>
+@model WineShop.Models.ViewModels.CartVM
+@using WineShop.Utility
 
 @{
     ViewData["Title"] = "Shopping Cart";
@@ -8,7 +8,7 @@
 <div class="container py-4">
     <h2 class="mb-4">Shopping Cart</h2>
 
-    @if (!Model.Any())
+    @if (!Model.Items.Any())
     {
         <div class="alert alert-info">Please add items to cart.</div>
         <a asp-controller="Home" asp-action="ShopSite" class="btn btn-outline-primary">Continue Shopping</a>
@@ -16,26 +16,51 @@
     else
     {
         <div class="row g-3">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Items)
             {
                 <div class="col-12">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <div class="row align-items-center">
+                            <div class="row align-items-center g-3">
                                 <div class="col-md-2 text-center">
-                                    <img src="@WC.ImageProductPath@item.Image" class="img-fluid rounded" style="max-height:100px;" />
+                                    <img src="~/images/product/@item.Image" class="img-fluid rounded" style="max-height:100px;" />
                                 </div>
-                                <div class="col-md-7">
+
+                                <div class="col-md-4">
                                     <h5 class="mb-1">@item.Name</h5>
                                     <p class="mb-0 text-muted">@item.Description</p>
                                 </div>
-                                <div class="col-md-1 text-md-end">
+
+                                <div class="col-md-2 text-md-center">
                                     <strong>@item.Price.ToString("0.00") zł</strong>
                                 </div>
-                                <div class="col-md-2 text-md-end">
+
+                                <div class="col-md-2">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <form asp-action="Decrease" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.ProductId" />
+                                            <button type="submit" class="btn btn-outline-secondary">-</button>
+                                        </form>
+
+                                        <span class="fw-bold">@item.Quantity</span>
+
+                                        <form asp-action="Increase" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.ProductId" />
+                                            <button type="submit" class="btn btn-outline-secondary">+</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1 text-md-center">
+                                    <strong>@item.LineTotal.ToString("0.00") zł</strong>
+                                </div>
+
+                                <div class="col-md-1 text-md-end">
                                     <form asp-action="Remove" method="post">
                                         @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="id" value="@item.ProductId" />
                                         <button type="submit" class="btn btn-outline-danger">Remove</button>
                                     </form>
                                 </div>
@@ -46,13 +71,16 @@
             }
         </div>
 
-        <div class="d-flex justify-content-between mt-4">
+        <div class="d-flex justify-content-between align-items-center mt-4">
             <a asp-controller="Home" asp-action="ShopSite" class="btn btn-outline-primary">Continue Shopping</a>
 
-            <form asp-action="Index" method="post">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-primary">Continue</button>
-            </form>
+            <div class="text-end">
+                <div class="mb-2 fw-bold">Total: @Model.TotalAmount.ToString("0.00") zł</div>
+                <form asp-action="Index" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-primary">Continue</button>
+                </form>
+            </div>
         </div>
     }
 </div>

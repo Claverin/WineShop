@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WineShop.Data;
 using WineShop.Models;
+using WineShop.Models.ViewModels;
 
 namespace WineShop.Controllers
 {
-    [Authorize(Roles = WC.AdminRole)]
+    [Authorize]
     public class ShipmentController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -15,17 +18,48 @@ namespace WineShop.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Shipment> objList = _db.Shipment;
-            return View(objList);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole(WC.AdminRole);
+
+            var query = _db.Order
+                .AsNoTracking()
+                .Include(x => x.OrderStatus)
+                .Include(x => x.PaymentMethod)
+                .Include(x => x.Shipment)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(x => x.CustomerId == userId);
+            }
+
+            var items = await query
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new ShipmentListItemVM
+                {
+                    OrderId = x.Id,
+                    CustomerEmail = x.CustomerEmail,
+                    StatusName = x.OrderStatus.Name,
+                    PaymentMethodName = x.PaymentMethod.Name,
+                    TotalAmount = x.TotalAmount,
+                    CreatedAtUtc = x.CreatedAtUtc,
+                    SendDate = x.ShipmentId != null ? x.Shipment.SendDate : null,
+                    DeliverDate = x.ShipmentId != null ? x.Shipment.DeliverDate : null
+                })
+                .ToListAsync();
+
+            return View(items);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Shipment obj)
@@ -42,6 +76,7 @@ namespace WineShop.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0)
@@ -59,6 +94,7 @@ namespace WineShop.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Shipment obj)
@@ -78,6 +114,7 @@ namespace WineShop.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -95,6 +132,7 @@ namespace WineShop.Controllers
             return View(obj);
         }
 
+        [Authorize(Roles = WC.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
