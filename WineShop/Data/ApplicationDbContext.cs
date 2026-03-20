@@ -44,12 +44,6 @@ namespace WineShop.Data
                 .HasForeignKey(x => x.OrderStatusId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Order>()
-                .HasOne(x => x.Shipment)
-                .WithMany()
-                .HasForeignKey(x => x.ShipmentId)
-                .OnDelete(DeleteBehavior.SetNull);
-
             modelBuilder.Entity<OrderItem>()
                 .HasOne(x => x.Order)
                 .WithMany(x => x.Items)

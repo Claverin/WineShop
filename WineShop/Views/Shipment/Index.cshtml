@@ -1,17 +1,13 @@
+@using WineShop.Utility
 @model IEnumerable<WineShop.Models.ViewModels.ShipmentListItemVM>
 
 @{
-    ViewData["Title"] = User.IsInRole(WC.AdminRole) ? "Orders and Shipments" : "My Orders";
+    ViewData["Title"] = User.IsInRole(WC.AdminRole) ? "Shipment Overview" : "My Orders";
 }
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">@ViewData["Title"]</h2>
-
-        @if (User.IsInRole(WC.AdminRole))
-        {
-            <a asp-action="Create" class="btn btn-primary">Create Shipment</a>
-        }
     </div>
 
     @if (!Model.Any())
@@ -33,10 +29,12 @@
                         }
                         <th>Status</th>
                         <th>Payment</th>
-                        <th>Total</th>
-                        <th>Created</th>
-                        <th>Sent</th>
+                        <th>Carrier</th>
+                        <th>Method</th>
+                        <th>Tracking</th>
+                        <th>Shipped</th>
                         <th>Delivered</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,10 +48,12 @@
                             }
                             <td>@item.StatusName</td>
                             <td>@item.PaymentMethodName</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Carrier) ? "-" : item.Carrier)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.ShippingMethod) ? "-" : item.ShippingMethod)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.TrackingNumber) ? "-" : item.TrackingNumber)</td>
+                            <td>@(item.ShippedDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                            <td>@(item.DeliveredDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                             <td>@item.TotalAmount.ToString("0.00") zł</td>
-                            <td>@item.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
-                            <td>@(item.SendDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                            <td>@(item.DeliverDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                         </tr>
                     }
                 </tbody>
