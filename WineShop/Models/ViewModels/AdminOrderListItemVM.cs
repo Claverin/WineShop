@@ -9,6 +9,6 @@ namespace WineShop.Models.ViewModels
         public string PaymentMethodName { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime CreatedAtUtc { get; set; }
-        public bool HasShipment { get; set; }
+        public bool HasShippingInfo { get; set; }
     }
 }

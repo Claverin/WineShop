@@ -1,12 +1,12 @@
 @model WineShop.Models.ViewModels.AdminOrderDetailsVM
 
 @{
-    ViewData["Title"] = $"Order #{Model.OrderId}";
+    ViewData["Title"] = $"Manage Order #{Model.OrderId}";
 }
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Order #@Model.OrderId</h2>
+        <h2 class="mb-0">Manage Order #@Model.OrderId</h2>
         <a asp-action="Index" class="btn btn-outline-secondary">Back to Orders</a>
     </div>
 
@@ -60,7 +60,7 @@
         <div class="col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h4 class="mb-3">Admin Actions</h4>
+                    <h4 class="mb-3">Order & Shipping</h4>
 
                     <form asp-action="Update" method="post">
                         @Html.AntiForgeryToken()
@@ -72,8 +72,35 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ShipmentId" class="form-label"></label>
-                            <select asp-for="ShipmentId" asp-items="Model.Shipments" class="form-select"></select>
+                            <label asp-for="Carrier" class="form-label"></label>
+                            <input asp-for="Carrier" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ShippingMethod" class="form-label"></label>
+                            <input asp-for="ShippingMethod" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TrackingNumber" class="form-label"></label>
+                            <input asp-for="TrackingNumber" class="form-control" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ShippedDate" class="form-label"></label>
+                                <input asp-for="ShippedDate" type="date" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DeliveredDate" class="form-label"></label>
+                                <input asp-for="DeliveredDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ShippingNotes" class="form-label"></label>
+                            <textarea asp-for="ShippingNotes" class="form-control" rows="4"></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Save Changes</button>
@@ -82,8 +109,10 @@
                     <hr />
 
                     <div class="mb-2"><strong>Current status:</strong> @Model.CurrentStatusName</div>
-                    <div class="mb-2"><strong>Shipment sent:</strong> @(Model.ShipmentSendDate?.ToString("yyyy-MM-dd") ?? "-")</div>
-                    <div class="mb-0"><strong>Shipment delivered:</strong> @(Model.ShipmentDeliverDate?.ToString("yyyy-MM-dd") ?? "-")</div>
+                    <div class="mb-2"><strong>Carrier:</strong> @(string.IsNullOrWhiteSpace(Model.Carrier) ? "-" : Model.Carrier)</div>
+                    <div class="mb-2"><strong>Tracking:</strong> @(string.IsNullOrWhiteSpace(Model.TrackingNumber) ? "-" : Model.TrackingNumber)</div>
+                    <div class="mb-2"><strong>Shipped:</strong> @(Model.ShippedDate?.ToString("yyyy-MM-dd") ?? "-")</div>
+                    <div class="mb-0"><strong>Delivered:</strong> @(Model.DeliveredDate?.ToString("yyyy-MM-dd") ?? "-")</div>
                 </div>
             </div>
         </div>

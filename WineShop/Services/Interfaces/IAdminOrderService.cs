@@ -6,6 +6,6 @@ namespace WineShop.Services.Interfaces
     {
         Task<List<AdminOrderListItemVM>> GetOrdersAsync();
         Task<AdminOrderDetailsVM?> GetOrderAsync(int orderId);
-        Task<bool> UpdateOrderAsync(int orderId, int orderStatusId, int? shipmentId);
+        Task<bool> UpdateOrderAsync(AdminOrderDetailsVM model);
     }
 }

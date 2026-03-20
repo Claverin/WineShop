@@ -8,7 +8,10 @@ namespace WineShop.Models.ViewModels
         public string PaymentMethodName { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime CreatedAtUtc { get; set; }
-        public DateTime? SendDate { get; set; }
-        public DateTime? DeliverDate { get; set; }
+        public string? Carrier { get; set; }
+        public string? ShippingMethod { get; set; }
+        public string? TrackingNumber { get; set; }
+        public DateTime? ShippedDate { get; set; }
+        public DateTime? DeliveredDate { get; set; }
     }
 }

@@ -38,7 +38,7 @@ namespace WineShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(AdminOrderDetailsVM model)
         {
-            var updated = await _adminOrderService.UpdateOrderAsync(model.OrderId, model.OrderStatusId, model.ShipmentId);
+            var updated = await _adminOrderService.UpdateOrderAsync(model);
 
             if (!updated)
             {

@@ -54,10 +54,21 @@ namespace WineShop.Models
         [ForeignKey(nameof(OrderStatusId))]
         public OrderStatus OrderStatus { get; set; }
 
-        public int? ShipmentId { get; set; }
+        [StringLength(100)]
+        public string? Carrier { get; set; }
 
-        [ForeignKey(nameof(ShipmentId))]
-        public Shipment? Shipment { get; set; }
+        [StringLength(100)]
+        public string? ShippingMethod { get; set; }
+
+        [StringLength(100)]
+        public string? TrackingNumber { get; set; }
+
+        public DateTime? ShippedDate { get; set; }
+
+        public DateTime? DeliveredDate { get; set; }
+
+        [StringLength(1000)]
+        public string? ShippingNotes { get; set; }
 
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     }

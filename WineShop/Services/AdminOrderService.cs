@@ -31,7 +31,12 @@ namespace WineShop.Services
                     PaymentMethodName = x.PaymentMethod.Name,
                     TotalAmount = x.TotalAmount,
                     CreatedAtUtc = x.CreatedAtUtc,
-                    HasShipment = x.ShipmentId != null
+                    HasShippingInfo =
+                        !string.IsNullOrWhiteSpace(x.Carrier) ||
+                        !string.IsNullOrWhiteSpace(x.ShippingMethod) ||
+                        !string.IsNullOrWhiteSpace(x.TrackingNumber) ||
+                        x.ShippedDate != null ||
+                        x.DeliveredDate != null
                 })
                 .ToListAsync();
         }
@@ -42,7 +47,6 @@ namespace WineShop.Services
                 .AsNoTracking()
                 .Include(x => x.OrderStatus)
                 .Include(x => x.PaymentMethod)
-                .Include(x => x.Shipment)
                 .Include(x => x.Items)
                 .FirstOrDefaultAsync(x => x.Id == orderId);
 
@@ -61,22 +65,6 @@ namespace WineShop.Services
                 })
                 .ToListAsync();
 
-            var shipments = await _db.Shipment
-                .AsNoTracking()
-                .OrderByDescending(x => x.SendDate)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = $"#{x.Id} | {x.SendDate:yyyy-MM-dd} -> {x.DeliverDate:yyyy-MM-dd}"
-                })
-                .ToListAsync();
-
-            shipments.Insert(0, new SelectListItem
-            {
-                Value = "",
-                Text = "No shipment"
-            });
-
             return new AdminOrderDetailsVM
             {
                 OrderId = order.Id,
@@ -89,13 +77,15 @@ namespace WineShop.Services
                 TotalAmount = order.TotalAmount,
                 CreatedAtUtc = order.CreatedAtUtc,
                 OrderStatusId = order.OrderStatusId,
-                ShipmentId = order.ShipmentId,
+                Carrier = order.Carrier,
+                ShippingMethod = order.ShippingMethod,
+                TrackingNumber = order.TrackingNumber,
+                ShippedDate = order.ShippedDate,
+                DeliveredDate = order.DeliveredDate,
+                ShippingNotes = order.ShippingNotes,
                 CurrentStatusName = order.OrderStatus.Name,
                 PaymentMethodName = order.PaymentMethod.Name,
-                ShipmentSendDate = order.Shipment?.SendDate,
-                ShipmentDeliverDate = order.Shipment?.DeliverDate,
                 Statuses = statuses,
-                Shipments = shipments,
                 Items = order.Items
                     .OrderBy(x => x.ProductName)
                     .Select(x => new AdminOrderItemVM
@@ -109,34 +99,29 @@ namespace WineShop.Services
             };
         }
 
-        public async Task<bool> UpdateOrderAsync(int orderId, int orderStatusId, int? shipmentId)
+        public async Task<bool> UpdateOrderAsync(AdminOrderDetailsVM model)
         {
-            var order = await _db.Order.FirstOrDefaultAsync(x => x.Id == orderId);
+            var order = await _db.Order.FirstOrDefaultAsync(x => x.Id == model.OrderId);
 
             if (order is null)
             {
                 return false;
             }
 
-            var statusExists = await _db.OrderStatus.AnyAsync(x => x.Id == orderStatusId);
+            var statusExists = await _db.OrderStatus.AnyAsync(x => x.Id == model.OrderStatusId);
 
             if (!statusExists)
             {
                 return false;
             }
 
-            if (shipmentId.HasValue)
-            {
-                var shipmentExists = await _db.Shipment.AnyAsync(x => x.Id == shipmentId.Value);
-
-                if (!shipmentExists)
-                {
-                    return false;
-                }
-            }
-
-            order.OrderStatusId = orderStatusId;
-            order.ShipmentId = shipmentId;
+            order.OrderStatusId = model.OrderStatusId;
+            order.Carrier = string.IsNullOrWhiteSpace(model.Carrier) ? null : model.Carrier.Trim();
+            order.ShippingMethod = string.IsNullOrWhiteSpace(model.ShippingMethod) ? null : model.ShippingMethod.Trim();
+            order.TrackingNumber = string.IsNullOrWhiteSpace(model.TrackingNumber) ? null : model.TrackingNumber.Trim();
+            order.ShippedDate = model.ShippedDate;
+            order.DeliveredDate = model.DeliveredDate;
+            order.ShippingNotes = string.IsNullOrWhiteSpace(model.ShippingNotes) ? null : model.ShippingNotes.Trim();
 
             _db.Order.Update(order);
             await _db.SaveChangesAsync();
