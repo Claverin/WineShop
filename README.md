@@ -426,7 +426,7 @@ Current limitations:
 
 - No real payment provider integration
 - No email confirmation flow
-- No automated test project yet
+- No automated test project
 - Admin role assignment may require manual configuration during local testing
 - The UI is functional but can still be improved visually
 - Some parts of the application can be further refactored into cleaner service-level logic
@@ -437,7 +437,6 @@ Current limitations:
 
 Possible improvements:
 
-- 🧪 Add unit tests for cart, order and product services
 - 🧪 Add integration tests for main user flows
 - ⚙️ Add CI pipeline with build and test steps
 - 🛡️ Improve validation and error handling
@@ -447,23 +446,6 @@ Possible improvements:
 - 📊 Improve admin dashboard UX
 - 💳 Add payment provider mock/integration
 - 🌐 Add API endpoints for selected operations
-
----
-
-## ✅ Project Status
-
-Portfolio version: `v1.0`
-
-The main feature set is complete.
-
-Further work should focus on:
-
-- documentation,
-- tests,
-- small refactoring,
-- code quality improvements,
-
-instead of adding large new features.
 
 ---
 
