@@ -1,5 +1,5 @@
 services:
-  db:
+  sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       ACCEPT_EULA: "Y"
@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - db
+      - sqlserver
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:8080"
