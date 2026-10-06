@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WineShop.Data;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WineShop.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class DbInitializer
     {
         public static async Task InitializeAsync(IServiceProvider services)
@@ -17,7 +19,10 @@ namespace WineShop.Utility
                     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                    await db.Database.MigrateAsync();
+                    if (db.Database.IsRelational())
+                    {
+                        await db.Database.MigrateAsync();
+                    }
 
                     if (!await roleManager.RoleExistsAsync(WC.AdminRole))
                     {
