@@ -3,6 +3,7 @@ WORKDIR /src
 
 COPY WineShop.sln ./
 COPY WineShop/WineShop.csproj WineShop/
+COPY WineShop.Tests/WineShop.Tests.csproj WineShop.Tests/
 RUN dotnet restore WineShop.sln
 
 COPY . .

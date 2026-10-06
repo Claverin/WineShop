@@ -1,81 +1,63 @@
-﻿@model IEnumerable<WineShop.Models.Shipment>
+@using WineShop.Utility
+@model IEnumerable<WineShop.Models.ViewModels.ShipmentListItemVM>
+
 @{
-    var modelTemplate = new Shipment();
+    ViewData["Title"] = User.IsInRole(WC.AdminRole) ? "Shipment Overview" : "My Orders";
 }
 
-<div class="container p-3">
-    <div class="row pt-4">
-        <div class="col-6">
-            <h2 class="text-primary">Shipment List</h2>
-        </div>
-        @if (User.IsInRole(WC.AdminRole))
-        {
-            <div class="col-6" style="text-align:right;">
-                <a asp-controller="Shipment" asp-action="Create" class="btn btn-primary">
-                    <i class="fa-solid fa-plus"></i>
-                    Add New Shipment
-                </a>
-            </div>
-        }
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">@ViewData["Title"]</h2>
     </div>
 
-    <br /><br />
-
-    @if (Model.Count() > 0)
+    @if (!Model.Any())
     {
-        <table class="table table-bordered table-striped" style="width:100%">
-            <thead>
-                <tr>
-                    <th>
-                        Id
-                    </th>
-                    <th>
-                        SendDate
-                    </th>
-                    <th>
-                        DeliverDate
-                    </th>
-                    <th>
-                        Details
-                    </th>
-                    @if (User.IsInRole(WC.AdminRole)) { <th></th> }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var Shipment in Model)
-                {
-                    <tr>
-                        <td width="8%">@Shipment.Id</td>
-                        <td width="20%">@Shipment.SendDate</td>
-                        @if(Shipment.DeliverDate is null)
-                        {
-                            <td width="20%">Is not delivered</td>
-                        }
-                        else
-                        {
-                            <td width="20%">@Shipment.DeliverDate</td>
-                        }
-                        <td width="20%">@Shipment.Details</td>
-                        @if (User.IsInRole(WC.AdminRole))
-                        {
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Edit" class="btn btn-primary mx-1">
-                                        <i class="fas fa-edit"></i>Edit
-                                    </a>
-                                    <a asp-controller="Shipment" asp-route-Id="@Shipment.Id" asp-action="Delete" class="btn btn-danger mx-1">
-                                        <i class="far fa-trash-alt"></i>Delete
-                                    </a>
-                                </div>
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="alert alert-info mb-0">
+            No orders found.
+        </div>
     }
     else
     {
-        <p> No Shipment exists.</p>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        @if (User.IsInRole(WC.AdminRole))
+                        {
+                            <th>Customer</th>
+                        }
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Carrier</th>
+                        <th>Method</th>
+                        <th>Tracking</th>
+                        <th>Shipped</th>
+                        <th>Delivered</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>#@item.OrderId</td>
+                            @if (User.IsInRole(WC.AdminRole))
+                            {
+                                <td>@item.CustomerEmail</td>
+                            }
+                            <td>@item.StatusName</td>
+                            <td>@item.PaymentMethodName</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Carrier) ? "-" : item.Carrier)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.ShippingMethod) ? "-" : item.ShippingMethod)</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.TrackingNumber) ? "-" : item.TrackingNumber)</td>
+                            <td>@(item.ShippedDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                            <td>@(item.DeliveredDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                            <td>@item.TotalAmount.ToString("0.00") zł</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </div>

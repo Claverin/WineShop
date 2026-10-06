@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WineShop.Data;
-using WineShop.Models;
+using WineShop.Models.ViewModels;
+using WineShop.Utility;
 
 namespace WineShop.Controllers
 {
+    [Authorize]
     public class ShipmentController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -14,92 +18,41 @@ namespace WineShop.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Shipment> objList = _db.Shipment;
-            return View(objList);
-        }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole(WC.AdminRole);
 
-        //CREATE
-        public IActionResult Create()
-        {
-            return View();
-        }
+            var query = _db.Order
+                .AsNoTracking()
+                .Include(x => x.OrderStatus)
+                .Include(x => x.PaymentMethod)
+                .AsQueryable();
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Shipment obj)
-        {
-            obj.SendDate = DateTime.Now;
-            if (ModelState.IsValid)
+            if (!isAdmin)
             {
-                _db.Shipment.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                query = query.Where(x => x.CustomerId == userId);
             }
-            return View(obj);
-        }
 
-        //EDIT
-        public IActionResult Edit(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            var obj = _db.Shipment.Find(id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            return View(obj);
-        }
+            var items = await query
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => new ShipmentListItemVM
+                {
+                    OrderId = x.Id,
+                    CustomerEmail = x.CustomerEmail,
+                    StatusName = x.OrderStatus.Name,
+                    PaymentMethodName = x.PaymentMethod.Name,
+                    TotalAmount = x.TotalAmount,
+                    CreatedAtUtc = x.CreatedAtUtc,
+                    Carrier = x.Carrier,
+                    ShippingMethod = x.ShippingMethod,
+                    TrackingNumber = x.TrackingNumber,
+                    ShippedDate = x.ShippedDate,
+                    DeliveredDate = x.DeliveredDate
+                })
+                .ToListAsync();
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Shipment obj)
-        {
-            if(obj.DeliverDate < DateTime.Now)
-            {
-                ModelState.AddModelError("DeliverDate", "Deliver data can't be set lower than send data");
-            }
-            if (ModelState.IsValid)
-            {
-                _db.Shipment.Update(obj);
-                _db.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(obj);
-        }
-
-        //DELETE
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            var obj = _db.Shipment.Find(id);
-
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            return View(obj);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(int? id)
-        {
-            var obj = _db.Shipment.Find(id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            _db.Shipment.Remove(obj);
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return View(items);
         }
     }
 }

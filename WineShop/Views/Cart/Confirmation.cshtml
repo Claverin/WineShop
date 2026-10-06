@@ -1,0 +1,19 @@
+@model WineShop.Models.ViewModels.OrderConfirmationVM
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+            <h2 class="mb-3">Order Created</h2>
+            <p class="mb-2">Order number: <strong>#@Model.OrderId</strong></p>
+            <p class="mb-2">Status: <strong>@Model.StatusName</strong></p>
+            <p class="mb-2">Created: <strong>@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</strong></p>
+            <p class="mb-4">Total: <strong>@Model.TotalAmount.ToString("0.00") zł</strong></p>
+
+            <a asp-controller="Home" asp-action="ShopSite" class="btn btn-primary">Back to Shop</a>
+        </div>
+    </div>
+</div>

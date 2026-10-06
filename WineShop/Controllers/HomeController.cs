@@ -1,186 +1,187 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 using WineShop.Data;
 using WineShop.Models;
 using WineShop.Models.ViewModels;
-using WineShop.Utility;
+using WineShop.Services.Interfaces;
 
-namespace WineShop.Controllers
+namespace WineShop.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext _db;
+    private readonly ICartService _cartService;
+    private readonly IRatingService _ratingService;
+    private readonly ICommentService _commentService;
+    private readonly IProductDetailsService _productDetailsService;
+
+    public HomeController(
+    ILogger<HomeController> logger,
+    ApplicationDbContext db,
+    ICartService cartService,
+    IRatingService ratingService,
+    ICommentService commentService,
+    IProductDetailsService productDetailsService)
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _db;
-        private readonly UserManager<IdentityUser> _userManager;
+        _logger = logger;
+        _db = db;
+        _cartService = cartService;
+        _ratingService = ratingService;
+        _commentService = commentService;
+        _productDetailsService = productDetailsService;
+    }
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<IdentityUser> userManager)
+    public IActionResult Index() => View();
+
+    public IActionResult ShopSite(int? typeId, int page = 1, int pageSize = 12)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 60);
+
+        var query = _db.Product
+            .AsNoTracking()
+            .Include(p => p.ProductType)
+            .Include(p => p.Rating)
+            .Include(p => p.Manufacturer)
+            .AsQueryable();
+
+        if (typeId.HasValue)
+            query = query.Where(p => p.IdProductType == typeId.Value);
+
+        var total = query.Count();
+
+        var products = query
+            .OrderBy(p => p.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var vm = new HomeVM
         {
-            _logger = logger;
-            _db = db;
-            _userManager = userManager;
+            Products = products,
+            ProductTypes = _db.ProductType.AsNoTracking().ToList(),
+
+            Page = page,
+            PageSize = pageSize,
+            TotalItems = total,
+            TypeId = typeId
+        };
+
+        return View(vm);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var detailsVM = await _productDetailsService.GetAsync(id, userId);
+
+        if (detailsVM is null)
+        {
+            return NotFound();
         }
 
-        public IActionResult Index()
+        return View(detailsVM);
+    }
+
+    [HttpPost, ActionName("Details")]
+    [ValidateAntiForgeryToken]
+    public IActionResult DetailsPost(int id, int quantity)
+    {
+        _cartService.Add(id, Math.Max(1, quantity));
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RemoveFromCart(int id)
+    {
+        _cartService.Remove(id);
+        return RedirectToAction(nameof(ShopSite));
+    }
+
+    [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddComment(Comment comment)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
         {
-            return View();
+            return Forbid();
         }
 
-        public IActionResult ShopSite()
+        if (comment.IdProduct is null)
         {
-            HomeVM homeVM = new HomeVM()
-            {
-                Products = _db.Product
-                .Include(u => u.ProductType)
-                .Include(u => u.Rating)
-                .Include(u => u.Manufacturer),
-                ProductTypes = _db.ProductType
-            };
-            return View(homeVM);
+            return BadRequest();
         }
 
-        public async Task<IActionResult> Details(int id)
+        if (!ModelState.IsValid)
         {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
-            {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
-            }
-
-            DetailsVM DetailsVM = new DetailsVM()
-            {
-                Product = _db.Product
-                .Include(u => u.ProductType)
-                .Include(u => u.Manufacturer)
-                .Include(u => u.Comment)
-                .Include(u => u.Rating)
-                .ThenInclude(u => u.ApplicationUser)
-                .Where(u => u.Id == id)
-                .FirstOrDefault(),
-                ExistsInCart = false
-            };
-
-            if (User.IsInRole(WC.CustomerRole) || User.IsInRole(WC.AdminRole))
-            {
-                var userName = HttpContext.User.Identity.Name;
-                var user = await _userManager.FindByNameAsync(userName);
-
-                if (_db.Rating.Any(x => x.IdCustomer == user.Id && x.IdProduct == id))
-                {
-                    DetailsVM.UserRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault().RatingValue;
-                }
-            }
-
-            foreach (var item in shoppingCartList)
-            {
-                if (item.ProductId == id)
-                {
-                    DetailsVM.ExistsInCart = true;
-                }
-            }
-
-            return View(DetailsVM);
-        }
-
-        [HttpPost, ActionName("Details")]
-        public IActionResult DetailsPost(int id)
-        {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
-            {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
-            }
-            shoppingCartList.Add(new ShoppingCart { ProductId = id });
-            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
-            return RedirectToAction(nameof(ShopSite));
-        }
-
-        public IActionResult RemoveFromCart(int id)
-        {
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
-            {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
-            }
-
-            var itemToRemove = shoppingCartList.SingleOrDefault(r => r.ProductId == id);
-            if (itemToRemove != null)
-            {
-                shoppingCartList.Remove(itemToRemove);
-            }
-
-            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
-            return RedirectToAction(nameof(ShopSite));
-        }
-
-        [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddComment(Comment comment)
-        {
-            comment.Date = DateTime.Now;
-            if (ModelState.IsValid)
-            {
-                _db.Comment.Add(comment);
-                _db.SaveChanges();
-            }
             return RedirectToAction(nameof(Details), new { id = comment.IdProduct });
         }
 
-        [Authorize(Roles = WC.AdminRole)]
-        public IActionResult DeleteComment(int id)
-        {
-            var searchingComment = _db.Comment.Find(id);
-            if (searchingComment == null)
-            {
-                return NotFound();
-            }
+        var productId = await _commentService.AddAsync(
+            userId,
+            comment.IdProduct.Value,
+            comment.CommentContent ?? string.Empty);
 
-            _db.Comment.Remove(searchingComment);
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Details), new { id = searchingComment.IdProduct });
-        }
-        
-        [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
-        public async Task<IActionResult> RateProduct(int id, int rate)
-        {
-            var userName = HttpContext.User.Identity.Name;
-            var user = await _userManager.FindByNameAsync(userName);
-            if (rate == 0)
-            {
-                var productRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault();
-                _db.Rating.Remove(productRating);
-            }
-            else if (_db.Rating.Any(x => x.IdCustomer == user.Id && x.IdProduct == id))
-            {
-                var productRating = _db.Rating.Where(x => x.IdCustomer == user.Id && x.IdProduct == id).FirstOrDefault();
-                productRating.RatingValue = rate;
-                _db.Rating.Update(productRating);
-            }
-            else
-            {
-                var productRating = new Rating()
-                {
-                    IdProduct = id,
-                    RatingValue = rate,
-                    IdCustomer = user.Id,
-                };
-
-                _db.Rating.Add(productRating);
-            }
-            _db.SaveChanges();
-            return RedirectToAction(nameof(Details), new { id });
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return RedirectToAction(nameof(Details), new { id = productId });
     }
+
+    [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteComment(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
+        var result = await _commentService.DeleteAsync(id, userId, User.IsInRole(WC.AdminRole));
+
+        if (result.Status == DeleteCommentStatus.NotFound)
+        {
+            return NotFound();
+        }
+
+        if (result.Status == DeleteCommentStatus.Forbidden)
+        {
+            return Forbid();
+        }
+
+        if (result.ProductId is null)
+        {
+            return RedirectToAction(nameof(ShopSite));
+        }
+
+        return RedirectToAction(nameof(Details), new { id = result.ProductId });
+    }
+
+    [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RateProduct(int id, int rate)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Forbid();
+        }
+
+        if (rate < 0 || rate > 5)
+        {
+            return BadRequest();
+        }
+
+        await _ratingService.SetRatingAsync(userId, id, rate);
+        return Ok();
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+        => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 }

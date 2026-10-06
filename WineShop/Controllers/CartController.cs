@@ -1,38 +1,61 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WineShop.Data;
-using WineShop.Models;
 using WineShop.Models.ViewModels;
+using WineShop.Services.Interfaces;
 using WineShop.Utility;
 
 namespace WineShop.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = WC.AdminRole + "," + WC.CustomerRole)]
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
-        [BindProperty]
-        public ProductUserVM ProductUserVM { get; set; }
-        public CartController(ApplicationDbContext db)
+        private readonly ICartService _cartService;
+        private readonly IOrderService _orderService;
+
+        public CartController(
+            ApplicationDbContext db,
+            ICartService cartService,
+            IOrderService orderService)
         {
             _db = db;
+            _cartService = cartService;
+            _orderService = orderService;
         }
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
+            var cartItems = _cartService.GetAll();
+            var productIds = cartItems.Select(x => x.ProductId).ToList();
 
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if(HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count()>0)
+            var products = await _db.Product
+                .AsNoTracking()
+                .Where(x => productIds.Contains(x.Id))
+                .OrderBy(x => x.Name)
+                .ToListAsync();
+
+            var vm = new CartVM
             {
-                //session exists
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
-            }
+                Items = products.Select(x =>
+                {
+                    var quantity = cartItems.First(y => y.ProductId == x.Id).Quantity;
 
-            List<int> productInCart = shoppingCartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productList = _db.Product.Where(u => productInCart.Contains(u.Id));
+                    return new CartItemVM
+                    {
+                        ProductId = x.Id,
+                        Name = x.Name,
+                        Description = x.Description,
+                        Image = x.Image,
+                        Price = x.Price,
+                        Quantity = quantity
+                    };
+                }).ToList()
+            };
 
-            return View(productList);
+            return View(vm);
         }
 
         [HttpPost]
@@ -43,46 +66,105 @@ namespace WineShop.Controllers
             return RedirectToAction(nameof(Summary));
         }
 
-        public IActionResult Summary()
+        public async Task<IActionResult> Summary()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            if (string.IsNullOrEmpty(userId))
             {
-                //session exists
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+                return Forbid();
             }
 
-            List<int> productInCart = shoppingCartList.Select(i => i.ProductId).ToList();
-            IEnumerable<Product> productList = _db.Product.Where(u => productInCart.Contains(u.Id));
+            var vm = await _orderService.BuildCheckoutAsync(userId);
 
-            ProductUserVM = new ProductUserVM()
+            if (!vm.Items.Any())
             {
-                ApplicationUser = _db.ApplicationUser.FirstOrDefault(u => u.Id == claim.Value),
-                ProductList = productList.ToList()
-            };
+                return RedirectToAction(nameof(Index));
+            }
 
-            return View(ProductUserVM);
+            return View(vm);
         }
 
-        public IActionResult Remove(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Summary")]
+        public async Task<IActionResult> SummaryPost(CheckoutVM model)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
-                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            if (string.IsNullOrEmpty(userId))
             {
-                //session exists
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+                return Forbid();
             }
 
-            shoppingCartList.Remove(shoppingCartList.FirstOrDefault(u => u.ProductId == id));
-            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
+            var checkoutData = await _orderService.BuildCheckoutAsync(userId);
 
+            if (!checkoutData.Items.Any())
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Items = checkoutData.Items;
+                model.PaymentMethods = checkoutData.PaymentMethods;
+                return View(model);
+            }
+
+            var orderId = await _orderService.PlaceOrderAsync(model, userId);
+
+            if (orderId is null)
+            {
+                model.Items = checkoutData.Items;
+                model.PaymentMethods = checkoutData.PaymentMethods;
+                ModelState.AddModelError(string.Empty, "Unable to create order.");
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(Confirmation), new { id = orderId.Value });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Increase(int id)
+        {
+            _cartService.Increase(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Decrease(int id)
+        {
+            _cartService.Decrease(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Remove(int id)
+        {
+            _cartService.Remove(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Confirmation(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Forbid();
+            }
+
+            var vm = await _orderService.GetConfirmationAsync(id, userId, User.IsInRole(WC.AdminRole));
+
+            if (vm is null)
+            {
+                return NotFound();
+            }
+
+            return View(vm);
         }
     }
 }
